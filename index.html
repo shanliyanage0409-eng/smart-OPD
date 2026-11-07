@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart OPD — Real-Time Queue & Automated WhatsApp System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Poppins:wght@600;700&family=Noto+Sans+Sinhala:wght@500;600;700&family=Noto+Sans+Tamil:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --primary: #0284c7;
+  --primary-dark: #0369a1;
+  --success: #16a34a;
+  --whatsapp: #25d366;
+  --whatsapp-dark: #128c7e;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --teal: #0d9488;
+  --teal-dark: #0f766e;
+  --line: #cbd5e1;
+  --radius: 14px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;transition:all 0.2s ease;}
+body{background:var(--bg);color:var(--ink);font-family:'Outfit','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;line-height:1.5;min-height:100vh;overflow-x:hidden;}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px;}
+.hidden{display:none !important;}
+
+/* Emergency Top Bar */
+.emergency-bar{background:#1e293b;color:#f8fafc;font-size:14px;font-weight:600;padding:8px 0;text-align:center;}
+.emergency-bar b{color:#38bdf8;font-weight:700;}
+
+/* Header */
+header.top{background:#ffffff;border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.03);}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+.brand-mark{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.brand-mark .en{font-family:'Poppins',sans-serif;font-weight:700;font-size:22px;color:var(--primary);}
+.brand-mark .tag{font-weight:600;font-size:12px;color:var(--ink-soft);background:#e0f2fe;padding:2px 8px;border-radius:20px;}
+nav.top-nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+
+/* Buttons */
+.nav-btn, .btn {
+  font-family:'Outfit','Noto Sans Sinhala','Noto Sans Tamil',sans-serif;
+  font-weight:600;font-size:14px;padding:10px 18px;border:1px solid var(--line);border-radius:10px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;background:#ffffff;color:var(--ink);
+  box-shadow:0 2px 4px rgba(0,0,0,0.04);
+  transition:transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+.nav-btn:hover, .btn:hover { background:#f1f5f9; border-color:#94a3b8; transform:translateY(-3px); box-shadow:0 8px 16px rgba(15,23,42,0.12); }
+.nav-btn:active, .btn:active { transform:translateY(-1px); box-shadow:0 4px 8px rgba(15,23,42,0.1); }
+.btn-primary { background:linear-gradient(135deg,#38bdf8,var(--primary) 55%,var(--primary-dark));color:#ffffff;border:1px solid var(--primary-dark); box-shadow:0 4px 10px rgba(2,132,199,0.28); }
+.btn-primary:hover { background:linear-gradient(135deg,#0ea5e9,var(--primary-dark) 55%,#075985); box-shadow:0 12px 24px rgba(2,132,199,0.38); }
+.btn-whatsapp { background:var(--whatsapp);color:#fff;border:none; box-shadow:0 3px 6px rgba(37,211,102,0.3); }
+.btn-whatsapp:hover { background:var(--whatsapp-dark); box-shadow:0 12px 22px rgba(37,211,102,0.4); }
+.btn-danger { background:var(--danger);color:#fff;border:none; box-shadow:0 3px 6px rgba(220,38,38,0.22); }
+.btn-danger:hover { background:#b91c1c; box-shadow:0 12px 22px rgba(220,38,38,0.35); }
+.btn-success { background:var(--success);color:#fff;border:none; box-shadow:0 3px 6px rgba(22,163,74,0.22); }
+.btn-success:hover { background:#15803d; box-shadow:0 12px 22px rgba(22,163,74,0.35); }
+
+.lang-select { font-family:'Outfit',sans-serif;font-weight:600;font-size:13.5px;padding:9px 12px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;cursor:pointer; }
+
+main{padding:32px 0 60px;}
+
+/* HERO SECTION — full-bleed, fills the full width of the screen */
+.hero-section {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: 62vh;
+  max-height: 640px;
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 75% 30%;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(248,250,252,0.98) 0%, rgba(248,250,252,0.94) 30%, rgba(248,250,252,0.55) 52%, rgba(15,23,42,0.08) 78%);
+}
+.hero-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 90px;
+  z-index: 3;
+  line-height: 0;
+}
+.hero-wave svg { width:100%; height:100%; display:block; }
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 620px;
+  min-height: 62vh;
+  max-height: 640px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px clamp(24px, 6vw, 80px);
+}
+.hero-content h1 { font-family:'Poppins',sans-serif;font-weight:700;font-size:clamp(30px, 3.6vw, 46px);line-height:1.14;color:var(--ink);letter-spacing:-0.01em; }
+.hero-content p#txt-sub { font-size:17px;color:var(--ink-soft);margin-top:16px;max-width:440px; }
+
+/* PORTAL + FEATURE GRIDS */
+.landing-grid { display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;align-items:stretch; }
+.portal-card {
+  background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);text-align:center;cursor:pointer;
+  box-shadow:0 4px 16px rgba(15,23,42,0.05);
+  display:flex;flex-direction:column;align-items:center;height:100%;
+  transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.portal-card p { flex-grow:1; }
+.portal-card .btn { margin-top:20px; width:100%; }
+.portal-card:hover { border-color:var(--primary); transform:translateY(-6px); box-shadow:0 20px 36px rgba(2,132,199,0.18); }
+
+.icon-badge {
+  width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(135deg,#e0f2fe,#bae6fd);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;
+}
+.icon-badge svg { width:28px;height:28px;stroke:var(--primary-dark); }
+
+.feature-grid { display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;margin-top:20px;align-items:stretch; }
+.feature-card {
+  background:#fff;padding:24px;border-radius:var(--radius);border:1px solid var(--line);text-align:center;
+  box-shadow:0 4px 16px rgba(15,23,42,0.05);
+  transition:transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.feature-card:hover { border-color:var(--primary); transform:translateY(-6px); box-shadow:0 20px 36px rgba(2,132,199,0.15); }
+.feature-card h3 { font-family:'Poppins',sans-serif;font-size:17px;color:var(--ink);margin-bottom:8px; }
+.feature-card p { font-size:14px;color:var(--ink-soft);line-height:1.5; }
+
+.select-group { margin-top:20px; display:flex; flex-direction:column; gap:16px; }
+.form-line { display:flex; flex-direction:column; gap:6px; text-align:left; }
+.form-line label { font-weight:600; font-size:14px; color:var(--ink); }
+.form-select, .form-input { width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; font-size:14.5px; font-family:inherit; background:#ffffff; color:var(--ink); outline:none; }
+
+/* HOSPITAL DETAIL + DOCTORS LIST */
+.back-link { display:inline-block; color:var(--primary); font-weight:600; font-size:14px; cursor:pointer; margin-bottom:14px; }
+.back-link:hover { color:var(--primary-dark); text-decoration:underline; }
+
+.hd-info-card { background:#fff;padding:24px 28px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:0 4px 16px rgba(15,23,42,0.05); }
+.hd-info-card h2 { font-family:'Poppins',sans-serif;font-size:22px;color:var(--ink); }
+.hd-tags { display:flex;flex-wrap:wrap;gap:8px;margin-top:12px; }
+.hd-tag { font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:20px;background:#f1f5f9;color:var(--ink-soft); }
+.hd-tag.hd-tag-type { background:#ede9fe;color:#6d28d9; }
+.hd-tag.hd-tag-count { background:var(--teal);color:#fff; }
+
+.btn-general-opd {
+  display:block; width:100%; text-align:center; margin-top:18px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-dark));
+  color:#fff; font-weight:700; font-size:15.5px; font-family:inherit;
+  padding:16px; border:none; border-radius:12px; cursor:pointer;
+  box-shadow:0 6px 16px rgba(13,148,136,0.3);
+  transition:transform 0.18s ease, box-shadow 0.18s ease;
+}
+.btn-general-opd:hover { transform:translateY(-3px); box-shadow:0 12px 24px rgba(13,148,136,0.38); }
+
+.hd-section-title { font-family:'Poppins',sans-serif;font-size:19px;color:var(--ink);margin-top:28px; }
+.hd-section-sub { color:var(--ink-soft);font-size:14px;margin-top:4px;margin-bottom:16px; }
+
+.doctor-cards-grid { display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:18px; }
+.doctor-card { background:#fff;padding:22px;border-radius:var(--radius);border:1px solid var(--line);box-shadow:0 4px 16px rgba(15,23,42,0.05); transition:transform 0.18s ease, box-shadow 0.18s ease; }
+.doctor-card:hover { transform:translateY(-4px); box-shadow:0 14px 28px rgba(2,132,199,0.12); }
+.doctor-card h4 { font-family:'Poppins',sans-serif;font-size:17px;color:var(--ink); }
+.doctor-card .doc-label { color:var(--ink-soft);font-size:13.5px;margin-top:2px; }
+.doctor-card .doc-schedule { color:var(--primary-dark);font-size:13.5px;font-weight:600;margin-top:10px; }
+.doc-status-pill { display:inline-block;font-size:12px;font-weight:700;padding:4px 11px;border-radius:20px;margin-top:12px; }
+.doc-status-pill.arrived { background:#dcfce7;color:#15803d; }
+.doc-status-pill.not-arrived { background:#fee2e2;color:#b91c1c; }
+.doc-now-serving { color:#be123c;font-weight:700;font-size:14px;margin-top:10px; }
+.doctor-card .btn { margin-top:16px; width:100%; }
+
+.booking-box { background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);margin-top:20px; }
+.token-badge { background:#e0f2fe;color:var(--primary-dark);font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;padding:12px;border-radius:10px;text-align:center;margin:15px 0; }
+
+.doc-select { width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;font-family:inherit;margin-bottom:6px;background:#fff;color:var(--ink); }
+.reason-note { display:block;font-size:12px;color:var(--ink-soft);font-style:italic;margin-top:2px; }
+
+.status-tag { padding:4px 10px; border-radius:12px; font-size:12px; font-weight:700; display:inline-block; }
+.status-pending { background:#fef3c7; color:#b45309; }
+.status-accepted { background:#dcfce7; color:#15803d; }
+.status-completed { background:#e0e7ff; color:#3730a3; }
+.status-cancelled { background:#fee2e2; color:#b91c1c; }
+
+.table-wrapper { width:100%; overflow-x:auto; margin-top:15px; }
+.table-style { width:100%; border-collapse:collapse; min-width:680px; }
+.table-style th, .table-style td { border:1px solid var(--line); padding:10px; text-align:left; font-size:14px; }
+.table-style th { background:#f1f5f9; }
+
+/* Modal */
+.modal-overlay { position:fixed;inset:0;background:rgba(15,23,42,0.5);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px; }
+.modal-box { background:#fff;border-radius:var(--radius);padding:24px;max-width:380px;width:100%;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1); }
+.btn-full { width:100%; }
+
+@media (max-width: 900px) {
+  .landing-grid { grid-template-columns:1fr; }
+  .feature-grid { grid-template-columns:1fr; }
+}
+
+@media (max-width: 640px) {
+  .hero-section { min-height: 88vh; max-height: none; }
+  .hero-content { min-height: 88vh; max-height: none; padding:32px 22px; }
+  .hero-overlay { background: linear-gradient(180deg, rgba(248,250,252,0.97) 0%, rgba(248,250,252,0.94) 55%, rgba(248,250,252,0.55) 78%, rgba(15,23,42,0.05) 100%); }
+}
+</style>
+</head>
+<body>
+
+<div class="emergency-bar"><span id="txt-emergency">Suwa Seriya Emergency: <b>1990</b></span></div>
+
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand-mark" onclick="goHome()">
+      <span class="en">Smart OPD</span>
+      <span class="tag" id="txt-brand-tag">Queue System</span>
+    </div>
+    
+    <nav class="top-nav">
+      <button id="nav-home-btn" class="nav-btn" onclick="goHome()">Home</button>
+      <button id="nav-hospitals-btn" class="nav-btn hidden" onclick="showUserHospitals()">Hospitals</button>
+      <button id="nav-status-btn" class="nav-btn hidden" onclick="showUserStatus()">Check Appointment</button>
+      
+      <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="en" selected>English</option>
+        <option value="si">සිංහල</option>
+        <option value="ta">தமிழ்</option>
+      </select>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. HOME VIEW -->
+  <div id="view-landing">
+
+    <!-- HERO SECTION (image + overlay text) -->
+    <div class="hero-section">
+      <img src="https://images.unsplash.com/photo-1758691462321-9b6c98c40f7e?fm=jpg&q=80&w=1600&auto=format&fit=crop" alt="Doctor caring for a patient" class="hero-bg-img">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 id="txt-title">Smart OPD — Real-Time Hospital Queue System</h1>
+        <p id="txt-sub">Select your category below to proceed.</p>
+      </div>
+      <div class="hero-wave">
+        <svg viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,50 C240,90 480,10 720,35 C960,60 1200,15 1440,45 L1440,90 L0,90 Z" fill="#e0f2fe" opacity="0.65"></path>
+          <path d="M0,65 C300,30 660,90 960,55 C1160,32 1320,70 1440,58 L1440,90 L0,90 Z" fill="#f8fafc"></path>
+        </svg>
+      </div>
+    </div>
+
+    <div class="landing-grid">
+      <div class="portal-card" onclick="openUserPortal()">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 9h18"></path><path d="M8 2v4M16 2v4"></path><path d="M9 15l2 2 4-4"></path></svg>
+        </div>
+        <h2 id="txt-u-head">User Portal</h2>
+        <p id="txt-u-desc">Book OPD tokens, view live queue time, and check appointment status.</p>
+        <button class="btn btn-primary btn-full" id="txt-u-btn">Enter User Portal</button>
+      </div>
+
+      <div class="portal-card" onclick="promptLogin('doctor')">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v6a4 4 0 0 0 8 0V3"></path><path d="M6 9v2a6 6 0 0 0 12 0V9"></path><circle cx="19" cy="6" r="2"></circle><circle cx="12" cy="19" r="2"></circle><path d="M12 17v-2"></path></svg>
+        </div>
+        <h2 id="txt-d-head">Doctor Panel</h2>
+        <p id="txt-d-desc">Live consultation dashboard for medical staff.</p>
+        <button class="btn btn-primary btn-full" id="txt-d-btn">Doctor Login</button>
+      </div>
+
+      <div class="portal-card" onclick="promptLogin('staff')">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3h6v3H9z"></path><path d="M8 12h8M8 16h5"></path></svg>
+        </div>
+        <h2 id="txt-s-head">OPD Counter (Staff)</h2>
+        <p id="txt-s-desc">Verify patient arrivals, accept appointments &amp; send WhatsApp notifications.</p>
+        <button class="btn btn-primary btn-full" id="txt-s-btn">Staff Login</button>
+      </div>
+    </div>
+
+    <!-- FEATURE HIGHLIGHTS -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
+        </div>
+        <h3 id="txt-f1-title">Real-Time Queue Management</h3>
+        <p id="txt-f1-desc">Track patient queue in real-time for seamless OPD visits.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        </div>
+        <h3 id="txt-f2-title">Secure &amp; Reliable</h3>
+        <p id="txt-f2-desc">Ensure patient data privacy and system reliability.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M9 3h6v3H9z"></path><path d="M9 13l2 2 4-4"></path></svg>
+        </div>
+        <h3 id="txt-f3-title">Streamlined Workflow</h3>
+        <p id="txt-f3-desc">Enhance OPD efficiency and patient experience.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. USER PORTAL -->
+  <div id="view-user-hospitals" class="hidden">
+    <div id="hospital-select-card" style="background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);">
+      <h2 id="txt-hosp-title">Hospitals &amp; OPD Booking</h2>
+      <p id="txt-hosp-sub" style="color:var(--ink-soft);margin-top:4px;">Select Province, District, and Hospital to book your token.</p>
+      
+      <div class="select-group">
+        <div class="form-line">
+          <label id="lbl-select-prov">1. Select Province (පළාත):</label>
+          <select class="form-select" id="select-province" onchange="onProvinceChange(this.value)">
+            <option value="">-- Choose Province --</option>
+            <option value="Western">Western Province (බස්නාහිර පළාත)</option>
+            <option value="Central">Central Province (මධ්‍යම පළාත)</option>
+            <option value="Southern">Southern Province (දකුණු පළාත)</option>
+            <option value="Northern">Northern Province (උතුරු පළාත)</option>
+            <option value="Eastern">Eastern Province (නැගෙනහිර පළාත)</option>
+            <option value="North Western">North Western Province (වයඹ පළාත)</option>
+            <option value="North Central">North Central Province (උතුරු මැද පළාත)</option>
+            <option value="Uva">Uva Province (ඌව පළාත)</option>
+            <option value="Sabaragamuwa">Sabaragamuwa Province (සබරගමුව පළාත)</option>
+          </select>
+        </div>
+
+        <div class="form-line">
+          <label id="lbl-select-dist">2. Select District (දිස්ත්‍රික්කය):</label>
+          <select class="form-select" id="select-district" onchange="onDistrictChange(this.value)" disabled>
+            <option value="">-- First Select a Province --</option>
+          </select>
+        </div>
+
+        <div class="form-line">
+          <label id="lbl-select-hosp">3. Select Hospital (රෝහල):</label>
+          <select class="form-select" id="select-hospital" disabled>
+            <option value="">-- First Select a District --</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="btn-proceed-token" onclick="loadHospitalBooking()">Proceed to Book Token</button>
+      </div>
+    </div>
+
+    <!-- Hospital Detail + Doctors List -->
+    <div id="hospital-detail-card" class="hidden">
+      <a class="back-link" id="lnk-back-hospitals" onclick="backToHospitalSelect()">← back to hospitals</a>
+
+      <div class="hd-info-card">
+        <h2 id="hd-hosp-name">Hospital Name</h2>
+        <div class="hd-tags" id="hd-tags"></div>
+      </div>
+
+      <button class="btn-general-opd" id="btn-gen-opd" onclick="bookWithDoctor(null)">+ Book General OPD Appointment</button>
+
+      <h3 class="hd-section-title" id="txt-docs-title">Doctors at this hospital</h3>
+      <p class="hd-section-sub" id="txt-docs-sub">View doctor schedules and current queue status. Choose the doctor relevant to your condition.</p>
+
+      <div id="doctor-cards-grid" class="doctor-cards-grid"></div>
+    </div>
+
+    <!-- Booking Form -->
+    <div id="booking-process-card" class="booking-box hidden">
+      <a class="back-link" id="lnk-back-doc" onclick="backToHospitalDetail()">← change doctor</a>
+      <h3 id="selected-hosp-name" style="color:var(--primary);margin-top:10px;">Hospital Selected</h3>
+      <p id="selected-doctor-name" style="color:var(--ink-soft);font-weight:600;margin-top:2px;"></p>
+      <p id="txt-fill-details" style="font-size:13.5px;color:var(--ink-soft);margin-bottom:16px;margin-top:6px;">Fill in patient details to request an OPD token.</p>
+      
+      <form onsubmit="submitAppointment(event)">
+        <div class="select-group">
+          <div class="form-line">
+            <label id="lbl-patient-name">Full Name (සම්පූර්ණ නම):</label>
+            <input type="text" class="form-input" id="patient-name" required placeholder="e.g. K.A. Perera">
+          </div>
+          <div class="form-line">
+            <label id="lbl-patient-nic">NIC / Passport Number (හැඳුනුම්පත් අංකය):</label>
+            <input type="text" class="form-input" id="patient-nic" required placeholder="e.g. 199512345678">
+          </div>
+          <div class="form-line">
+            <label id="lbl-patient-age">Age (වයස):</label>
+            <input type="number" class="form-input" id="patient-age" required min="0" max="120" placeholder="e.g. 34">
+          </div>
+          <div class="form-line">
+            <label id="lbl-patient-phone">Phone Number (දුරකථන අංකය):</label>
+            <input type="tel" class="form-input" id="patient-phone" required placeholder="07XXXXXXXX">
+          </div>
+          <div class="form-line">
+            <label id="lbl-patient-wa">WhatsApp Mobile Number (WhatsApp අංකය):</label>
+            <input type="tel" class="form-input" id="patient-wa-phone" required placeholder="07XXXXXXXX">
+          </div>
+          <div class="form-line">
+            <label id="lbl-patient-reason">Reason / Illness — Optional (රෝගය / හේතුව - කැමති නම් පමණි):</label>
+            <input type="text" class="form-input" id="patient-reason" placeholder="e.g. Fever, eye checkup, knee pain...">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="btn-submit-req">Request Token</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Booking Result Card (Dynamic Live Updates) -->
+    <div id="booking-result-card" class="booking-box hidden" style="text-align:center;">
+      <h2 id="res-header-title" style="color:var(--warning);">Appointment Requested!</h2>
+      <p id="res-header-sub" style="color:var(--ink-soft);margin-top:4px;">Your appointment is currently <b>PENDING STAFF APPROVAL</b>.</p>
+      
+      <div class="token-badge" id="res-token-num">TOKEN #OPD-1001</div>
+      
+      <div style="text-align:left;background:#f1f5f9;padding:16px;border-radius:10px;font-size:14px;margin-bottom:15px;">
+        <p><b id="lbl-res-hosp">Hospital:</b> <span id="res-hosp">--</span></p>
+        <p><b id="lbl-res-doc">Doctor / Specialty:</b> <span id="res-doctor">--</span></p>
+        <p><b id="lbl-res-name">Patient:</b> <span id="res-name">--</span></p>
+        <p><b id="lbl-res-age">Age:</b> <span id="res-age">--</span></p>
+        <p><b id="lbl-res-phone">Phone No:</b> <span id="res-phone">--</span></p>
+        <p><b id="lbl-res-wa">WhatsApp No:</b> <span id="res-wa-phone">--</span></p>
+        <p><b id="lbl-res-status">Status:</b> <span id="res-status-tag" class="status-tag status-pending">Remaining (Pending Approval)</span></p>
+        <p id="res-queue-pos" style="margin-top:8px;font-size:15px;color:var(--primary-dark);"><b id="lbl-res-qpos">Queue Position:</b> <span id="res-queue-pos-val">--</span></p>
+        <p id="res-est-time-container" class="hidden" style="margin-top:8px;font-size:15px;color:var(--primary-dark);"><b id="lbl-res-esttime">Estimated Time:</b> <span id="res-est-time">--</span></p>
+      </div>
+      <button class="btn btn-primary" id="btn-chk-app-status" onclick="showUserStatus()">Check Appointment Status</button>
+      <button id="res-cancel-btn" class="btn btn-danger hidden" style="margin-top:10px;" onclick="cancelAppointment(activeUserTokenID)">✕ Cancel This Appointment</button>
+    </div>
+  </div>
+
+  <!-- 3. CHECK MY APPOINTMENT VIEW -->
+  <div id="view-user-status" class="hidden">
+    <div style="background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);">
+      <h2 id="txt-chk-title">Check My Appointment</h2>
+      <p id="txt-chk-sub" style="color:var(--ink-soft);margin-top:4px;">Enter your Token Number or NIC to check current status and estimated consultation time.</p>
+      
+      <div style="margin-top:20px;display:flex;gap:10px;">
+        <input type="text" id="chk-search-input" placeholder="Enter Token ID (e.g. OPD-1001) or NIC" class="form-input">
+        <button class="btn btn-primary" id="btn-search-app" onclick="searchAppointment()">Search</button>
+      </div>
+
+      <div id="search-result" class="hidden" style="margin-top:20px;padding:20px;background:#f8fafc;border-radius:10px;border:1px solid var(--line);">
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. STAFF PANEL -->
+  <div id="view-staff-panel" class="hidden">
+    <div style="background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h2 id="txt-staff-title">OPD Counter (Staff Panel)</h2>
+          <p id="txt-staff-sub" style="color:var(--ink-soft);margin-top:2px;">Accept pending tokens &amp; notify patients via WhatsApp.</p>
+          <p style="margin-top:6px;"><span style="font-size:12px;font-weight:700;color:var(--primary-dark);background:#e0f2fe;padding:4px 10px;border-radius:20px;">🏥 <span id="staff-panel-hospital-name">--</span></span></p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn" id="btn-staff-logout" onclick="staffLogout()">↩ Switch Hospital / Logout</button>
+          <button class="btn btn-success" id="btn-staff-csv" onclick="downloadAppointmentsCSV()">⬇️ Download Today's List (CSV)</button>
+          <button class="btn btn-danger" id="btn-staff-clear" onclick="clearAllData()">🗑️ Clear This Hospital's Data</button>
+        </div>
+      </div>
+      
+      <div style="margin-top:15px; display:flex; gap:10px;">
+        <button class="btn btn-danger" id="btn-add-emergency" onclick="addEmergencyPatient()">+ Add Emergency Patient (හදිසි රෝගී)</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="table-style">
+          <thead>
+            <tr>
+              <th id="th-st-token">Token</th>
+              <th id="th-st-name">Patient Name</th>
+              <th id="th-st-phone">Phone No</th>
+              <th id="th-st-wa">WhatsApp No</th>
+              <th id="th-st-doc">Doctor / Specialty</th>
+              <th id="th-st-docstatus">Doctor Status</th>
+              <th id="th-st-status">Status</th>
+              <th id="th-st-esttime">Estimated Time</th>
+              <th id="th-st-action">Action</th>
+            </tr>
+          </thead>
+          <tbody id="staff-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. DOCTOR PANEL -->
+  <div id="view-doctor-panel" class="hidden">
+    <div style="background:#fff;padding:28px;border-radius:var(--radius);border:1px solid var(--line);">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h2 id="txt-doc-title">Doctor Dashboard</h2>
+          <p id="txt-doc-sub" style="color:var(--ink-soft);margin-top:4px;">Approved Patient Consultation Queue (Average consultation: 4 mins/patient).</p>
+          <p style="margin-top:6px;"><span style="font-size:12px;font-weight:700;color:var(--primary-dark);background:#e0f2fe;padding:4px 10px;border-radius:20px;">🏥 <span id="doctor-panel-hospital-name">--</span> · <span id="doctor-panel-specialty-name">--</span></span></p>
+        </div>
+        <button class="btn" id="btn-doc-logout" onclick="staffLogout()">↩ Switch / Logout</button>
+      </div>
+
+      <div id="doc-arrival-box" style="margin-top:14px;padding:14px 16px;border-radius:12px;background:#fef2f2;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <span id="doc-arrival-label" style="font-weight:700;font-size:14.5px;">🔴 Not yet arrived</span>
+        <button class="btn btn-success" id="btn-doc-arrival" onclick="toggleDoctorArrival()">✅ Mark I've Arrived</button>
+      </div>
+
+      <div style="margin-top:15px;display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:12px;">
+        <div style="padding:16px;background:#e0f2fe;border-radius:10px;">
+          <span style="font-size:12px;font-weight:700;color:var(--primary-dark);" id="lbl-curr-consulting">CURRENTLY CONSULTING</span>
+          <h3 id="doc-active-token" style="font-size:20px;color:var(--ink);margin-top:4px;">No Active Patient</h3>
+        </div>
+        <div style="padding:16px;background:#f0fdf4;border-radius:10px;">
+          <span style="font-size:12px;font-weight:700;color:var(--success);" id="lbl-waiting-queue">WAITING IN YOUR QUEUE</span>
+          <h3 id="doc-waiting-count" style="font-size:20px;color:var(--ink);margin-top:4px;">0</h3>
+        </div>
+        <div style="padding:16px;background:#eef2ff;border-radius:10px;">
+          <span style="font-size:12px;font-weight:700;color:#4338ca;" id="lbl-seen-today">PATIENTS SEEN TODAY</span>
+          <h3 id="doc-seen-count" style="font-size:20px;color:var(--ink);margin-top:4px;">0</h3>
+        </div>
+      </div>
+
+      <div style="margin-top:15px;">
+        <button class="btn btn-success" id="btn-call-next" onclick="callNextPatient()">Call Next Patient (ඊළඟ රෝගියා)</button>
+      </div>
+
+      <h3 style="margin-top:20px;" id="txt-accepted-queue-title">Accepted Patients Queue</h3>
+      <div class="table-wrapper">
+        <table class="table-style">
+          <thead>
+            <tr>
+              <th id="th-doc-token">Token</th>
+              <th id="th-doc-name">Patient Name</th>
+              <th id="th-doc-age">Age</th>
+              <th id="th-doc-spec">Doctor / Specialty</th>
+              <th id="th-doc-esttime">Estimated Time</th>
+              <th id="th-doc-pos">Queue Position</th>
+            </tr>
+          </thead>
+          <tbody id="doctor-table-body">
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style="margin-top:28px;" id="txt-doc-history-title">Today's Consulted Patients History</h3>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin-top:2px;" id="txt-doc-history-sub">Patients you have already completed consultation for today.</p>
+      <div class="table-wrapper">
+        <table class="table-style">
+          <thead>
+            <tr>
+              <th id="th-his-token">Token</th>
+              <th id="th-his-name">Patient Name</th>
+              <th id="th-his-age">Age</th>
+              <th id="th-his-reason">Reason</th>
+              <th id="th-his-time">Time Consulted</th>
+            </tr>
+          </thead>
+          <tbody id="doctor-history-table-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="modal-title">Access Panel</h3>
+    <p style="font-size:13px;color:var(--ink-soft);margin-bottom:12px;" id="txt-modal-pass-sub">Enter any password to continue.</p>
+    <div id="modal-hospital-group" class="hidden" style="margin-bottom:12px;">
+      <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;" id="lbl-modal-hosp">Your Hospital (ඔබගේ රෝහල):</label>
+      <select id="modal-hospital-select" class="form-select" onchange="onModalHospitalChange()">
+        <option value="">-- Select Hospital --</option>
+      </select>
+    </div>
+    <div id="modal-specialty-group" class="hidden" style="margin-bottom:12px;">
+      <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px;" id="lbl-modal-spec">Your Specialty / Clinic (ඔබගේ විශේෂඥතාවය):</label>
+      <select id="modal-specialty-select" class="form-select">
+        <option value="">-- Select Hospital First --</option>
+      </select>
+    </div>
+    <input type="password" id="modal-passcode-input" placeholder="Enter Password" class="form-input" style="margin-bottom:12px;">
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-full" id="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary btn-full" id="btn-modal-login" onclick="verifyLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQnVPzF50ZsmLu1pd0PWmRMo8r2D6zPLs",
+    authDomain: "smart-opd-5daa3.firebaseapp.com",
+    databaseURL: "https://smart-opd-5daa3-default-rtdb.firebaseio.com",
+    projectId: "smart-opd-5daa3",
+    storageBucket: "smart-opd-5daa3.firebasestorage.app",
+    messagingSenderId: "319711185599",
+    appId: "1:319711185599:web:4845fd03548938cc1f940a"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  const hospitalData = {
+    Western: {
+      Colombo: ["National Hospital of Sri Lanka (NHSL Colombo)", "Lady Ridgeway Hospital for Children (LRH)", "De Soysa Hospital for Women", "Castle Street Hospital for Women", "Colombo South Teaching Hospital (Kalubowila)", "Colombo North Teaching Hospital (Ragama)", "National Eye Hospital Colombo", "Apeksha Hospital (Maharagama)", "Homagama Base Hospital", "Avissawella District General Hospital"],
+      Gampaha: ["Gampaha District General Hospital", "Negombo District General Hospital", "Mirigama Base Hospital", "Wathupitiwala Base Hospital"],
+      Kalutara: ["Kalutara District General Hospital", "Horana Base Hospital", "Panadura Base Hospital", "Matugama Base Hospital"]
+    },
+    Central: {
+      Kandy: ["National Hospital Kandy (Teaching)", "Peradeniya Teaching Hospital", "Sirimavo Bandaranaike Children's Hospital", "Nawalapitiya District General Hospital"],
+      Matale: ["Matale District General Hospital", "Dambulla Base Hospital"],
+      "Nuwara Eliya": ["Nuwara Eliya District General Hospital", "Dikoya Basic General Hospital"]
+    },
+    Southern: {
+      Galle: ["Karapitiya Teaching Hospital", "Mahamodara Maternity Hospital", "Balapitiya Base Hospital"],
+      Matara: ["Matara District General Hospital", "Kamburupitiya Base Hospital", "Deniyaya Base Hospital"],
+      Hambantota: ["Hambantota District General Hospital", "Tangalle Base Hospital"]
+    },
+    Northern: {
+      Jaffna: ["Jaffna Teaching Hospital", "Chavakachcheri Base Hospital", "Point Pedro Base Hospital"],
+      Kilinochchi: ["Kilinochchi District General Hospital"],
+      Mannar: ["Mannar District General Hospital"],
+      Mullaitivu: ["Mullaitivu District General Hospital"],
+      Vavuniya: ["Vavuniya District General Hospital"]
+    },
+    Eastern: {
+      Batticaloa: ["Batticaloa Teaching Hospital"],
+      Ampara: ["Ampara District General Hospital", "Kalmunai Ashraff Memorial Hospital"],
+      Trincomalee: ["Trincomalee District General Hospital", "Kantale Base Hospital"]
+    },
+    "North Western": {
+      Kurunegala: ["Kurunegala Teaching Hospital", "Kuliyapitiya Teaching Hospital"],
+      Puttalam: ["Chilaw District General Hospital", "Puttalam Base Hospital"]
+    },
+    "North Central": {
+      Anuradhapura: ["Anuradhapura Teaching Hospital"],
+      Polonnaruwa: ["Polonnaruwa District General Hospital"]
+    },
+    Uva: {
+      Badulla: ["Badulla Provincial General Hospital", "Diyatalawa Base Hospital"],
+      Monaragala: ["Monaragala District General Hospital", "Wellawaya Base Hospital"]
+    },
+    Sabaragamuwa: {
+      Ratnapura: ["Ratnapura Teaching Hospital", "Embilipitiya District General Hospital", "Balangoda Base Hospital"],
+      Kegalle: ["Kegalle District General Hospital", "Karawanella Base Hospital", "Mawanella Base Hospital"]
+    }
+  };
+
+  const specialtyPool = [
+    { name: "General Medicine",              days: "Mon – Sat",     time: "8.00 AM to 4.00 PM" },
+    { name: "Pediatrics",                    days: "Mon, Wed, Fri", time: "8.00 AM to 12.00 PM" },
+    { name: "Ophthalmology",                 days: "Mon, Wed, Fri", time: "8.00 AM to 12.00 PM" },
+    { name: "Orthopaedics",                  days: "Tue, Thu, Sat", time: "8.00 AM to 4.00 PM" },
+    { name: "ENT (Ear, Nose & Throat)",      days: "Tue, Thu",      time: "9.00 AM to 1.00 PM" },
+    { name: "Dermatology",                   days: "Mon, Thu",      time: "9.00 AM to 1.00 PM" },
+    { name: "Gynaecology & Obstetrics",      days: "Mon – Fri",     time: "8.00 AM to 12.00 PM" },
+    { name: "Cardiology",                    days: "Wed, Fri",      time: "9.00 AM to 1.00 PM" },
+    { name: "Psychiatry",                    days: "Tue, Fri",      time: "9.00 AM to 12.00 PM" },
+    { name: "Dental Clinic",                 days: "Mon – Sat",     time: "8.00 AM to 4.00 PM" },
+    { name: "Diabetes & Endocrinology",      days: "Mon, Wed",      time: "9.00 AM to 1.00 PM" },
+    { name: "Surgical Clinic",               days: "Tue, Thu, Sat", time: "8.00 AM to 12.00 PM" }
+  ];
+
+  function hashStr(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+
+  function getHospitalDoctors(hospName) {
+    const h = hashStr(hospName);
+    const count = 3 + (h % 3);
+    const doctors = [];
+    const usedIdx = new Set();
+    for (let i = 0; i < specialtyPool.length && doctors.length < count; i++) {
+      const idx = (h + i * 7) % specialtyPool.length;
+      if (usedIdx.has(idx)) continue;
+      usedIdx.add(idx);
+      const spec = specialtyPool[idx];
+      const key = doctorQueueKey(hospName, spec.name);
+      const defaultArrived = ((h + idx * 13) % 10) < 7;
+      const arrived = doctorArrivalStatus.hasOwnProperty(key) ? !!doctorArrivalStatus[key] : defaultArrived;
+      doctors.push({ name: spec.name, days: spec.days, time: spec.time, arrived: arrived });
+    }
+    return doctors;
+  }
+
+  function getNowServing(hospName, specialtyName) {
+    const acceptedCount = appointments.filter(a => a.hosp === hospName && a.doctorSpecialty === specialtyName && a.status === 'accepted').length;
+    const base = 1 + (hashStr(hospName + specialtyName) % 6);
+    return base + acceptedCount;
+  }
+
+  function getQueuePosition(app) {
+    const queue = appointments.filter(a => a.hosp === app.hosp && (a.status === 'pending' || a.status === 'accepted'));
+    const idx = queue.findIndex(a => a.id === app.id);
+    return { position: idx + 1, total: queue.length };
+  }
+
+  let selectedDoctorSpecialty = null;
+  let appointments = [];
+  let activeTokens = {};
+  let currentRole = '';
+  let activeUserTokenID = null;
+  let currentStaffHospital = null;
+  let currentDoctorHospital = null;
+  let currentDoctorSpecialty = null;
+  let currentLang = 'en';
+  let doctorArrivalStatus = {};
+
+  function getAllHospitalsFlat() {
+    const list = [];
+    Object.keys(hospitalData).forEach(prov => {
+      Object.keys(hospitalData[prov]).forEach(dist => {
+        hospitalData[prov][dist].forEach(h => list.push(h));
+      });
+    });
+    return list.sort((a, b) => a.localeCompare(b));
+  }
+
+  function getHospitalSpecialtyOptions(hospName) {
+    if (!hospName) return [];
+    return ["General OPD", ...getHospitalDoctors(hospName).map(d => d.name)];
+  }
+
+  function doctorQueueKey(hosp, specialty) { return `${hosp}||${specialty}`; }
+
+  function isToday(isoString) {
+    if (!isoString) return false;
+    const d = new Date(isoString);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  }
+
+  function formatTime(isoString) {
+    if (!isoString) return '--';
+    return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function saveData() {
+    database.ref('appointments').set(appointments);
+    database.ref('activeTokens').set(activeTokens);
+  }
+
+  database.ref('appointments').on('value', (snapshot) => {
+    const data = snapshot.val();
+    appointments = data ? data : [];
+    renderTables();
+    updateUserLiveCard();
+  });
+
+  database.ref('activeTokens').on('value', (snapshot) => {
+    activeTokens = snapshot.val() || {};
+    renderTables();
+  });
+
+  database.ref('doctorArrival').on('value', (snapshot) => {
+    doctorArrivalStatus = snapshot.val() || {};
+    renderTables();
+    const hosp = document.getElementById('select-hospital') ? document.getElementById('select-hospital').value : '';
+    if (hosp && !document.getElementById('hospital-detail-card').classList.contains('hidden')) {
+      renderHospitalDetail(hosp);
+    }
+  });
+
+  function toggleDoctorArrival() {
+    if (!currentDoctorHospital || !currentDoctorSpecialty) return;
+    const key = doctorQueueKey(currentDoctorHospital, currentDoctorSpecialty);
+    doctorArrivalStatus[key] = !doctorArrivalStatus[key];
+    database.ref('doctorArrival').set(doctorArrivalStatus);
+    renderTables();
+  }
+
+  function csvEscape(value) {
+    const str = String(value === undefined || value === null ? '' : value);
+    if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+    return str;
+  }
+
+  function downloadAppointmentsCSV() {
+    if (!currentStaffHospital) return alert(translations[currentLang].alertLoginHosp);
+
+    const todaysAppointments = appointments.filter(a => a.hosp === currentStaffHospital);
+    if (todaysAppointments.length === 0) return alert(translations[currentLang].alertNoAppExport);
+
+    const headers = ["Token", "Patient Name", "Age", "NIC / Passport", "Phone", "WhatsApp", "Doctor / Specialty", "Reason", "Status", "Emergency", "Completed At"];
+    const rows = todaysAppointments.map(a => [
+      a.id, a.name, a.age || '', a.nic, a.phone, a.waPhone,
+      a.doctorSpecialty || 'General OPD', a.reason || '', a.status,
+      a.isEmergency ? 'YES' : 'NO', a.completedAt ? formatTime(a.completedAt) : ''
+    ]);
+
+    const csvContent = [headers, ...rows].map(row => row.map(csvEscape).join(',')).join('\n');
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const safeHospName = currentStaffHospital.replace(/[^a-z0-9]/gi, '_');
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `SmartOPD_${safeHospName}_${dateStr}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  function clearAllData() {
+    if (currentRole === 'staff' && currentStaffHospital) {
+      if (confirm(translations[currentLang].confirmClearHospData.replace('{hosp}', currentStaffHospital))) {
+        appointments = appointments.filter(a => a.hosp !== currentStaffHospital);
+        saveData();
+        renderTables();
+        alert(translations[currentLang].alertHospDataCleared);
+      }
+      return;
+    }
+    if (confirm(translations[currentLang].confirmClearAllData)) {
+      appointments = [];
+      activeTokens = {};
+      activeUserTokenID = null;
+      saveData();
+      renderTables();
+      alert(translations[currentLang].alertAllDataCleared);
+    }
+  }
+
+  // Multi-language Dictionary
+  const translations = {
+    en: {
+      brandTag: "Queue System",
+      navHome: "Home",
+      navHospitals: "Hospitals",
+      navStatus: "Check Appointment",
+      emergency: "Suwa Seriya Emergency: <b>1990</b>",
+      title: "Smart OPD — Real-Time Hospital Queue System",
+      sub: "Select your category below to proceed.",
+      uHead: "User Portal",
+      uDesc: "Book OPD tokens, view live queue time, and check appointment status.",
+      uBtn: "Enter User Portal",
+      dHead: "Doctor Panel",
+      dDesc: "Live consultation dashboard for medical staff.",
+      dBtn: "Doctor Login",
+      sHead: "OPD Counter (Staff)",
+      sDesc: "Verify patient arrivals, accept appointments & send WhatsApp notifications.",
+      sBtn: "Staff Login",
+      f1Title: "Real-Time Queue Management",
+      f1Desc: "Track patient queue in real-time for seamless OPD visits.",
+      f2Title: "Secure & Reliable",
+      f2Desc: "Ensure patient data privacy and system reliability.",
+      f3Title: "Streamlined Workflow",
+      f3Desc: "Enhance OPD efficiency and patient experience.",
+      hospTitle: "Hospitals & OPD Booking",
+      hospSub: "Select Province, District, and Hospital to book your token.",
+      lblProv: "1. Select Province:",
+      lblDist: "2. Select District:",
+      lblHosp: "3. Select Hospital:",
+      optChooseProv: "-- Choose Province --",
+      optChooseDist: "-- Choose District --",
+      optChooseHosp: "-- Choose Hospital --",
+      optFirstProv: "-- First Select a Province --",
+      optFirstDist: "-- First Select a District --",
+      btnProceedToken: "Proceed to Book Token",
+      lnkBackHosp: "← back to hospitals",
+      btnGenOpd: "+ Book General OPD Appointment",
+      txtDocsTitle: "Doctors at this hospital",
+      txtDocsSub: "View doctor schedules and current queue status. Choose the doctor relevant to your condition.",
+      lnkBackDoc: "← change doctor",
+      txtFillDetails: "Fill in patient details to request an OPD token.",
+      lblPatName: "Full Name:",
+      lblPatNic: "NIC / Passport Number:",
+      lblPatAge: "Age:",
+      lblPatPhone: "Phone Number:",
+      lblPatWa: "WhatsApp Mobile Number:",
+      lblPatReason: "Reason / Illness — Optional:",
+      phName: "e.g. K.A. Perera",
+      phNic: "e.g. 199512345678",
+      phAge: "e.g. 34",
+      phPhone: "07XXXXXXXX",
+      phWa: "07XXXXXXXX",
+      phReason: "e.g. Fever, eye checkup, knee pain...",
+      btnSubmitReq: "Request Token",
+      resHeaderTitlePending: "Appointment Requested!",
+      resHeaderSubPending: "Your appointment is currently <b>PENDING STAFF APPROVAL</b>.",
+      resHeaderTitleAccepted: "Appointment Accepted! 🎉",
+      resHeaderSubAccepted: "Your appointment has been <b>APPROVED BY STAFF</b>.",
+      resHeaderTitleCompleted: "Consultation Completed ✅",
+      resHeaderSubCompleted: "Your OPD consultation has been <b>COMPLETED</b>. Thank you for visiting!",
+      resHeaderTitleCancelled: "Appointment Cancelled",
+      resHeaderSubCancelled: "This appointment has been <b>CANCELLED</b>.",
+      lblResHosp: "Hospital:",
+      lblResDoc: "Doctor / Specialty:",
+      lblResName: "Patient:",
+      lblResAge: "Age:",
+      lblResPhone: "Phone No:",
+      lblResWa: "WhatsApp No:",
+      lblResStatus: "Status:",
+      lblResQpos: "Queue Position:",
+      lblResEsttime: "Estimated Time:",
+      btnChkAppStatus: "Check Appointment Status",
+      btnCancelApp: "✕ Cancel This Appointment",
+      txtChkTitle: "Check My Appointment",
+      txtChkSub: "Enter your Token Number or NIC to check current status and estimated consultation time.",
+      phChkSearch: "Enter Token ID (e.g. OPD-1001) or NIC",
+      btnSearchApp: "Search",
+      txtStaffTitle: "OPD Counter (Staff Panel)",
+      txtStaffSub: "Accept pending tokens & notify patients via WhatsApp.",
+      btnStaffLogout: "↩ Switch Hospital / Logout",
+      btnStaffCsv: "⬇️ Download Today's List (CSV)",
+      btnStaffClear: "🗑️ Clear This Hospital's Data",
+      btnAddEmergency: "+ Add Emergency Patient",
+      thStToken: "Token",
+      thStName: "Patient Name",
+      thStPhone: "Phone No",
+      thStWa: "WhatsApp No",
+      thStDoc: "Doctor / Specialty",
+      thStDocStatus: "Doctor Status",
+      thStStatus: "Status",
+      thStEsttime: "Estimated Time",
+      thStAction: "Action",
+      txtDocTitle: "Doctor Dashboard",
+      txtDocSub: "Approved Patient Consultation Queue (Average consultation: 4 mins/patient).",
+      btnDocLogout: "↩ Switch / Logout",
+      lblCurrConsulting: "CURRENTLY CONSULTING",
+      lblWaitingQueue: "WAITING IN YOUR QUEUE",
+      lblSeenToday: "PATIENTS SEEN TODAY",
+      btnCallNext: "Call Next Patient",
+      txtAcceptedQueueTitle: "Accepted Patients Queue",
+      thDocToken: "Token",
+      thDocName: "Patient Name",
+      thDocAge: "Age",
+      thDocSpec: "Doctor / Specialty",
+      thDocEsttime: "Estimated Time",
+      thDocPos: "Queue Position",
+      txtDocHistoryTitle: "Today's Consulted Patients History",
+      txtDocHistorySub: "Patients you have already completed consultation for today.",
+      thHisToken: "Token",
+      thHisName: "Patient Name",
+      thHisAge: "Age",
+      thHisReason: "Reason",
+      thHisTime: "Time Consulted",
+      modalPassSub: "Enter any password to continue.",
+      lblModalHosp: "Your Hospital:",
+      lblModalSpec: "Your Specialty / Clinic:",
+      optSelectHosp: "-- Select Hospital --",
+      optSelectSpec: "-- Select Specialty --",
+      optFirstSelectHosp: "-- Select Hospital First --",
+      phPasscode: "Enter Password",
+      btnModalCancel: "Cancel",
+      btnModalLogin: "Login",
+      docPanelConsultant: "OPD consultant panel",
+      docArrived: "Doctor arrived",
+      docNotArrived: "Not yet arrived",
+      btnDocMarkArrived: "✅ Mark I've Arrived",
+      btnDocMarkLeft: "🔴 Mark as Not Arrived",
+      docNowServing: "Now serving: Token #",
+      btnBookApp: "Book Appointment",
+      forPrefix: "For: ",
+      generalOpdApp: "General OPD Appointment",
+      pendingStaffAcceptance: "Pending Staff Acceptance",
+      patientsAhead: "patients ahead",
+      inclEmergency: "incl.",
+      emergencyCase: "emergency case",
+      emergencyCases: "emergency cases",
+      longerWait: "longer wait",
+      posInQueue: "in queue at this hospital",
+      posAtHosp: "at this hospital",
+      statusCompleted: "Completed ✅",
+      statusCancelled: "Cancelled ✕",
+      statusAccepted: "Accepted ✓",
+      statusRemaining: "Remaining (Pending Approval)",
+      btnAcceptWa: "Accept & Send WhatsApp",
+      noActivePatient: "No Active Patient",
+      noActiveTokensHosp: "No active tokens for this hospital.",
+      noAcceptedPatientsWaiting: "No accepted patients waiting.",
+      noPatientsConsultedYet: "No patients consulted yet today.",
+      alertFillAll: "Please fill in all required fields!",
+      alertSelectHosp: "Please select a hospital!",
+      alertSelectHospToCont: "Please select your hospital to continue.",
+      alertSelectSpecToCont: "Please select your specialty / clinic to continue.",
+      alertEnterPass: "Please enter any password to proceed.",
+      alertLoginHosp: "Please login with a hospital selected first.",
+      alertNoAppExport: "No appointments to export for this hospital yet.",
+      alertHospDataCleared: "This hospital's data cleared.",
+      alertAllDataCleared: "All data cleared successfully!",
+      alertEmergencyAdded: "Emergency patient added at the front of the queue!",
+      alertNoAcceptedQueue: "No accepted patients in your queue!",
+      confirmCancelApp: "Are you sure you want to cancel appointment {id}?",
+      alertAppCancelled: "Your appointment has been cancelled.",
+      confirmClearHospData: "Are you sure you want to clear all data for {hosp}?",
+      confirmClearAllData: "Are you sure you want to CLEAR ALL DATA from the system?"
+    },
+    si: {
+      brandTag: "පෝලිම් පද්ධතිය",
+      navHome: "මුල් පිටුව",
+      navHospitals: "රෝහල්",
+      navStatus: "තත්ත්වය පරීක්ෂාව",
+      emergency: "සුව සැරිය හදිසි ඇමතුම්: <b>1990</b>",
+      title: "ස්මාර්ට් OPD — සැබෑ කාලීන රෝහල් පෝලිම් පද්ධතිය",
+      sub: "ඉදිරියට යාමට පහතින් ඔබගේ අංශය තෝරන්න.",
+      uHead: "රෝගී ද්වාරය",
+      uDesc: "OPD ටෝකන් වෙන්කරවා ගැනීම, සජීවී පෝලිම් කාලය සහ හමුවීම් තත්ත්වය පරීක්ෂා කරන්න.",
+      uBtn: "රෝගී ද්වාරයට පිවිසෙන්න",
+      dHead: "වෛද්‍ය පුවරුව",
+      dDesc: "වෛද්‍ය මණ්ඩලය සඳහා වන සජීවී පරීක්ෂණ උපකරණ පුවරුව.",
+      dBtn: "වෛද්‍ය ඇතුළුවීම",
+      sHead: "OPD කවුන්ටරය (කාර්ය මණ්ඩලය)",
+      sDesc: "රෝගීන් පැමිණීම තහවුරු කිරීම, හමුවීම් පිළිගැනීම සහ WhatsApp දැනුම්දීම් යැවීම.",
+      sBtn: "කාර්ය මණ්ඩල ඇතුළුවීම",
+      f1Title: "සැබෑ කාලීන පෝලිම් කළමනාකරණය",
+      f1Desc: "බාධාවකින් තොරව OPD පැමිණීම් සඳහා සජීවීව රෝගී පෝලිම නිරීක්ෂණය කරන්න.",
+      f2Title: "ආරක්ෂිත සහ විශ්වාසදායක",
+      f2Desc: "රෝගී දත්තවල රහස්‍යතාව සහ පද්ධතියේ විශ්වාසනීයත්වය තහවුරු කරයි.",
+      f3Title: "කාර්යක්ෂම කාර්ය ප්‍රවාහය",
+      f3Desc: "OPD කාර්යක්ෂමතාව සහ රෝගී අත්දැකීම් ඉහළ නංවන්න.",
+      hospTitle: "රෝහල් සහ OPD වෙන්කිරීම්",
+      hospSub: "ඔබගේ ටෝකනය වෙන්කරවා ගැනීමට පළාත, දිස්ත්‍රික්කය සහ රෝහල තෝරන්න.",
+      lblProv: "1. පළාත තෝරන්න:",
+      lblDist: "2. දිස්ත්‍රික්කය තෝරන්න:",
+      lblHosp: "3. රෝහල තෝරන්න:",
+      optChooseProv: "-- පළාත තෝරන්න --",
+      optChooseDist: "-- දිස්ත්‍රික්කය තෝරන්න --",
+      optChooseHosp: "-- රෝහල තෝරන්න --",
+      optFirstProv: "-- පළමුව පළාත තෝරන්න --",
+      optFirstDist: "-- පළමුව දිස්ත්‍රික්කය තෝරන්න --",
+      btnProceedToken: "ටෝකනය වෙන්කිරීමට ඉදිරියට යන්න",
+      lnkBackHosp: "← නැවත රෝහල් වෙත",
+      btnGenOpd: "+ සාමාන්‍ය OPD හමුවීමක් වෙන්කරන්න",
+      txtDocsTitle: "මෙම රෝහලේ වෛද්‍යවරුන්",
+      txtDocsSub: "වෛද්‍ය කාලසටහන් සහ වත්මන් පෝලිම් තත්ත්වය බලන්න. ඔබගේ රෝගයට අදාළ වෛද්‍යවරයා තෝරන්න.",
+      lnkBackDoc: "← වෛද්‍යවරයා මාරු කරන්න",
+      txtFillDetails: "OPD ටෝකනයක් ඉල්ලීමට රෝගියාගේ විස්තර පුරවන්න.",
+      lblPatName: "සම්පූර්ණ නම:",
+      lblPatNic: "හැඳුනුම්පත් / විදේශගමන් බලපත්‍ර අංකය:",
+      lblPatAge: "වයස:",
+      lblPatPhone: "දුරකථන අංකය:",
+      lblPatWa: "WhatsApp ජංගම දුරකථන අංකය:",
+      lblPatReason: "හේතුව / රෝගය — අනිවාර්ය නැත:",
+      phName: "උදා: කේ.ඒ. පෙරේරා",
+      phNic: "උදා: 199512345678",
+      phAge: "උදා: 34",
+      phPhone: "07XXXXXXXX",
+      phWa: "07XXXXXXXX",
+      phReason: "උදා: උණ, ඇස් පරීක්ෂාව, දණහිසේ කැක්කුම...",
+      btnSubmitReq: "ටෝකනය ඉල්ලුම් කරන්න",
+      resHeaderTitlePending: "හමුවීම ඉල්ලුම් කරන ලදී!",
+      resHeaderSubPending: "ඔබගේ හමුවීම දැනට <b>කාර්ය මණ්ඩල අනුමැතිය ලැබෙන තෙක් රැඳී පවතී</b>.",
+      resHeaderTitleAccepted: "හමුවීම පිළිගන්නා ලදී! 🎉",
+      resHeaderSubAccepted: "ඔබගේ හමුවීම <b>කාර්ය මණ්ඩලය විසින් අනුමත කර ඇත</b>.",
+      resHeaderTitleCompleted: "පරීක්ෂාව නිම කරන ලදී ✅",
+      resHeaderSubCompleted: "ඔබගේ OPD පරීක්ෂාව <b>සම්පූර්ණ කර ඇත</b>. පැමිණීමට ස්තූතියි!",
+      resHeaderTitleCancelled: "හමුවීම අවලංගු කරන ලදී",
+      resHeaderSubCancelled: "මෙම හමුවීම <b>අවලංගු කර ඇත</b>.",
+      lblResHosp: "රෝහල:",
+      lblResDoc: "වෛද්‍ය / විශේෂඥතාව:",
+      lblResName: "රෝගියා:",
+      lblResAge: "වයස:",
+      lblResPhone: "දුරකථන අංකය:",
+      lblResWa: "WhatsApp අංකය:",
+      lblResStatus: "තත්ත්වය:",
+      lblResQpos: "පෝලිමේ ස්ථානය:",
+      lblResEsttime: "අනුමාන වේලාව:",
+      btnChkAppStatus: "හමුවීමේ තත්ත්වය පරීක්ෂා කරන්න",
+      btnCancelApp: "✕ මෙම හමුවීම අවලංගු කරන්න",
+      txtChkTitle: "මගේ හමුවීම පරීක්ෂා කරන්න",
+      txtChkSub: "වත්මන් තත්ත්වය සහ අනුමාන පරීක්ෂණ වේලාව පරීක්ෂා කිරීමට ඔබගේ ටෝකන් අංකය හෝ NIC ඇතුළත් කරන්න.",
+      phChkSearch: "ටෝකන් ID (උදා: OPD-1001) හෝ NIC ඇතුළත් කරන්න",
+      btnSearchApp: "සොයන්න",
+      txtStaffTitle: "OPD කවුන්ටරය (කාර්ය මණ්ඩල පුවරුව)",
+      txtStaffSub: "රැඳී පවතින ටෝකන් පිළිගෙන WhatsApp හරහා රෝගීන්ට දැනුම් දෙන්න.",
+      btnStaffLogout: "↩ රෝහල මාරු කරන්න / නික්ම යන්න",
+      btnStaffCsv: "⬇️ අද දින ලැයිස්තුව බාගත කරන්න (CSV)",
+      btnStaffClear: "🗑️ මෙම රෝහලේ දත්ත ඉවත් කරන්න",
+      btnAddEmergency: "+ හදිසි රෝගියෙකු එකතු කරන්න",
+      thStToken: "ටෝකනය",
+      thStName: "රෝගියාගේ නම",
+      thStPhone: "දුරකථන අංකය",
+      thStWa: "WhatsApp අංකය",
+      thStDoc: "වෛද්‍ය / විශේෂඥතාව",
+      thStDocStatus: "වෛද්‍ය පැමිණීම",
+      thStStatus: "තත්ත්වය",
+      thStEsttime: "අනුමාන වේලාව",
+      thStAction: "ක්‍රියාමාර්ගය",
+      txtDocTitle: "වෛද්‍ය පුවරුව",
+      txtDocSub: "අනුමත වූ රෝගීන් පරීක්ෂණ පෝලිම (සාමාන්‍ය පරීක්ෂණ කාලය: රෝගියෙකුට මිනිත්තු 4).",
+      btnDocLogout: "↩ මාරු වන්න / නික්ම යන්න",
+      lblCurrConsulting: "දැනට පරීක්ෂා කරනු ලබයි",
+      lblWaitingQueue: "ඔබගේ පෝලිමේ රැඳී සිටින සංඛ්‍යාව",
+      lblSeenToday: "අද දින පරීක්ෂා කළ රෝගීන්",
+      btnCallNext: "ඊළඟ රෝගියා කැඳවන්න",
+      txtAcceptedQueueTitle: "පිළිගත් රෝගීන්ගේ පෝලිම",
+      thDocToken: "ටෝකනය",
+      thDocName: "රෝගියාගේ නම",
+      thDocAge: "වයස",
+      thDocSpec: "වෛද්‍ය / විශේෂඥතාව",
+      thDocEsttime: "අනුමාන වේලාව",
+      thDocPos: "පෝලිමේ ස්ථානය",
+      txtDocHistoryTitle: "අද දින පරීක්ෂා කළ රෝගීන්ගේ ඉතිහාසය",
+      txtDocHistorySub: "අද දින ඔබ පරීක්ෂා කර අවසන් කළ රෝගීන්.",
+      thHisToken: "ටෝකනය",
+      thHisName: "රෝගියාගේ නම",
+      thHisAge: "වයස",
+      thHisReason: "හේතුව",
+      thHisTime: "පරීක්ෂා කළ වේලාව",
+      modalPassSub: "ඉදිරියට යාමට ඕනෑම මුරපදයක් ඇතුළත් කරන්න.",
+      lblModalHosp: "ඔබගේ රෝහල:",
+      lblModalSpec: "ඔබගේ විශේෂඥතාවය / සායනය:",
+      optSelectHosp: "-- රෝහල තෝරන්න --",
+      optSelectSpec: "-- විශේෂඥතාව තෝරන්න --",
+      optFirstSelectHosp: "-- පළමුව රෝහල තෝරන්න --",
+      phPasscode: "මුරපදය ඇතුළත් කරන්න",
+      btnModalCancel: "අවලංගු කරන්න",
+      btnModalLogin: "ඇතුළු වන්න",
+      docPanelConsultant: "OPD උපදේශක මණ්ඩලය",
+      docArrived: "වෛද්‍යවරයා පැමිණ ඇත",
+      docNotArrived: "තවම පැමිණ නැත",
+      btnDocMarkArrived: "✅ පැමිණීම සලකුණු කරන්න",
+      btnDocMarkLeft: "🔴 නොපැමිණි ලෙස සලකුණු කරන්න",
+      docNowServing: "දැනට පරීක්ෂා කරන්නේ: ටෝකන් #",
+      btnBookApp: "හමුවීම වෙන්කරන්න",
+      forPrefix: "අදාළ වන්නේ: ",
+      generalOpdApp: "සාමාන්‍ය OPD හමුවීම",
+      pendingStaffAcceptance: "කාර්ය මණ්ඩල අනුමැතිය තෙක් රැඳී සිටී",
+      patientsAhead: "රෝගීන් ඉදිරියෙන් සිටී",
+      inclEmergency: "ඇතුළුව",
+      emergencyCase: "හදිසි අවස්ථාවක්",
+      emergencyCases: "හදිසි අවස්ථා",
+      longerWait: "වැඩි කාලයක් ගතවේ",
+      posInQueue: "මෙම රෝහලේ පෝලිමේ",
+      posAtHosp: "මෙම රෝහල තුළ",
+      statusCompleted: "සම්පූර්ණයි ✅",
+      statusCancelled: "අවලංගුයි ✕",
+      statusAccepted: "පිළිගන්නා ලදී ✓",
+      statusRemaining: "රැඳී පවතී (අනුමැතිය තෙක්)",
+      btnAcceptWa: "පිළිගෙන WhatsApp යවන්න",
+      noActivePatient: "සක්‍රිය රෝගියෙකු නැත",
+      noActiveTokensHosp: "මෙම රෝහල සඳහා සක්‍රිය ටෝකන නොමැත.",
+      noAcceptedPatientsWaiting: "පිළිගත් රෝගීන් පෝලිමේ නැත.",
+      noPatientsConsultedYet: "අද දින තවම රෝගීන් පරීක්ෂා කර නැත.",
+      alertFillAll: "කරුණාකර අවශ්‍ය සියලුම ක්ෂේත්‍ර පුරවන්න!",
+      alertSelectHosp: "කරුණාකර රෝහලක් තෝරන්න!",
+      alertSelectHospToCont: "ඉදිරියට යාමට කරුණාකර ඔබගේ රෝහල තෝරන්න.",
+      alertSelectSpecToCont: "ඉදිරියට යාමට කරුණාකර ඔබගේ විශේෂඥතාව / සායනය තෝරන්න.",
+      alertEnterPass: "කරුණාකර ඉදිරියට යාමට ඕනෑම මුරපදයක් ඇතුළත් කරන්න.",
+      alertLoginHosp: "කරුණාකර පළමුව රෝහල තෝරා ඇතුළු වන්න.",
+      alertNoAppExport: "මෙම රෝහල සඳහා අපනයනය කිරීමට හමුවීම් නොමැත.",
+      alertHospDataCleared: "මෙම රෝහලේ දත්ත ඉවත් කරන ලදී.",
+      alertAllDataCleared: "සියලුම දත්ත සාර්ථකව ඉවත් කරන ලදී!",
+      alertEmergencyAdded: "හදිසි රෝගියා පෝලිමේ ඉදිරියටම එකතු කරන ලදී!",
+      alertNoAcceptedQueue: "ඔබගේ පෝලිමේ පිළිගත් රෝගීන් නොමැත!",
+      confirmCancelApp: "ඔබට {id} හමුවීම අවලංගු කිරීමට අවශ්‍යද?",
+      alertAppCancelled: "ඔබගේ හමුවීම අවලංගු කර ඇත.",
+      confirmClearHospData: "ඔබට {hosp} හි සියලුම දත්ත ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?",
+      confirmClearAllData: "පද්ධතියෙන් සියලුම දත්ත ඉවත් කිරීමට ඔබට විශ්වාසද?"
+    },
+    ta: {
+      brandTag: "வரிசை முறைமை",
+      navHome: "முகப்பு",
+      navHospitals: "மருத்துவமனைகள்",
+      navStatus: "பதிவைச் சரிபார்க்க",
+      emergency: "சுவ சரிய அவசர அழைப்பு: <b>1990</b>",
+      title: "ஸ்மார்ட் OPD — நேரடி மருத்துவமனை வரிசை முறைமை",
+      sub: "தொடர கீழே உங்கள் வகையைத் தேர்ந்தெடுக்கவும்.",
+      uHead: "பயனர் நுழைவாயில்",
+      uDesc: "OPD டோக்கன்களை பதிவு செய்யவும், நேரடி வரிசை நேரத்தைப் பார்க்கவும்.",
+      uBtn: "பயனர் பகுதிக்குச் செல்லவும்",
+      dHead: "மருத்துவர் பலகை",
+      dDesc: "மருத்துவ ஊழியர்களுக்கான நேரடி ஆலோசனை பலகை.",
+      dBtn: "மருத்துவர் உள்நுழைவு",
+      sHead: "OPD கவுண்டர் (ஊழியர்)",
+      sDesc: "நோயாளி வருகையை சரிபார்த்து வாட்ஸ்அப் அறிவிப்புகளை அனுப்பவும்.",
+      sBtn: "ஊழியர் உள்நுழைவு",
+      f1Title: "நேரடி வரிசை மேலாண்மை",
+      f1Desc: "OPD வருகைகளுக்காக நோயாளிகளின் வரிசையை நேரலையாகக் கண்காணிக்கவும்.",
+      f2Title: "பாதுகாப்பானது & நம்பகமானது",
+      f2Desc: "நோயாளியின் தரவு தனியுரிமை மற்றும் கணினி நம்பகத்தன்மையை உறுதி செய்கிறது.",
+      f3Title: "நெறிப்படுத்தப்பட்ட பணிப்பாய்வு",
+      f3Desc: "OPD செயல்திறன் மற்றும் நோயாளி அனுபவத்தை மேம்படுத்தவும்.",
+      hospTitle: "மருத்துவமனைகள் & OPD முன்பதிவு",
+      hospSub: "உங்கள் டோக்கனைப் பதிவு செய்ய மாகாணம், மாவட்டம் மற்றும் மருத்துவமனையைத் தேர்ந்தெடுக்கவும்.",
+      lblProv: "1. மாகாணத்தைத் தேர்ந்தெடுக்கவும்:",
+      lblDist: "2. மாவட்டத்தைத் தேர்ந்தெடுக்கவும்:",
+      lblHosp: "3. மருத்துவமனையைத் தேர்ந்தெடுக்கவும்:",
+      optChooseProv: "-- மாகாணத்தைத் தேர்ந்தெடுக்கவும் --",
+      optChooseDist: "-- மாவட்டத்தைத் தேர்ந்தெடுக்கவும் --",
+      optChooseHosp: "-- மருத்துவமனையைத் தேர்ந்தெடுக்கவும் --",
+      optFirstProv: "-- முதலில் மாகாணத்தைத் தேர்ந்தெடுக்கவும் --",
+      optFirstDist: "-- முதலில் மாவட்டத்தைத் தேர்ந்தெடுக்கவும் --",
+      btnProceedToken: "டோக்கன் பதிவு செய்யத் தொடரவும்",
+      lnkBackHosp: "← மீண்டும் மருத்துவமனைகளுக்கு",
+      btnGenOpd: "+ பொது OPD பதிவைச் செய்யவும்",
+      txtDocsTitle: "இம்மருத்துவமனையின் மருத்துவர்கள்",
+      txtDocsSub: "மருத்துவர் அட்டவணை மற்றும் தற்போதைய வரிசை நிலையைப் பார்க்கவும்.",
+      lnkBackDoc: "← மருத்துவரை மாற்றவும்",
+      txtFillDetails: "OPD டோக்கனைக் கோர நோயாளி விவரங்களை நிரப்பவும்.",
+      lblPatName: "முழுப் பெயர்:",
+      lblPatNic: "அடையாள அட்டை / கடவுச்சீட்டு எண்:",
+      lblPatAge: "வயது:",
+      lblPatPhone: "தொலைபேசி எண்:",
+      lblPatWa: "வாட்ஸ்அப் எண்:",
+      lblPatReason: "காரணம் / நோய் — விருப்பமானது:",
+      phName: "எ.கா. K.A. பெரேரா",
+      phNic: "எ.கா. 199512345678",
+      phAge: "எ.கா. 34",
+      phPhone: "07XXXXXXXX",
+      phWa: "07XXXXXXXX",
+      phReason: "எ.கா. காய்ச்சல், கண் பரிசோதனை...",
+      btnSubmitReq: "டோக்கனைக் கோருங்கள்",
+      resHeaderTitlePending: "முன்பதிவு கோரப்பட்டது!",
+      resHeaderSubPending: "உங்கள் முன்பதிவு தற்போது <b>ஊழியர்களின் ஒப்புதலுக்காகக் காத்திருக்கிறது</b>.",
+      resHeaderTitleAccepted: "முன்பதிவு ஏற்றுக்கொள்ளப்பட்டது! 🎉",
+      resHeaderSubAccepted: "உங்கள் முன்பதிவு <b>ஊழியர்களால் அங்கீகரிக்கப்பட்டது</b>.",
+      resHeaderTitleCompleted: "பரிசோதனை முடிந்தது ✅",
+      resHeaderSubCompleted: "உங்கள் OPD பரிசோதனை <b>நிறைவடைந்தது</b>. வருகைக்கு நன்றி!",
+      resHeaderTitleCancelled: "முன்பதிவு ரத்து செய்யப்பட்டது",
+      resHeaderSubCancelled: "இந்த முன்பதிவு <b>ரத்து செய்யப்பட்டுள்ளது</b>.",
+      lblResHosp: "மருத்துவமனை:",
+      lblResDoc: "மருத்துவர் / துறை:",
+      lblResName: "நோயாளி:",
+      lblResAge: "வயது:",
+      lblResPhone: "தொலைபேசி எண்:",
+      lblResWa: "வாட்ஸ்அப் எண்:",
+      lblResStatus: "நிலை:",
+      lblResQpos: "வரிசை நிலை:",
+      lblResEsttime: "எதிர்பார்க்கப்படும் நேரம்:",
+      btnChkAppStatus: "பதிவு நிலையைச் சரிபார்க்கவும்",
+      btnCancelApp: "✕ இந்த முன்பதிவை ரத்து செய்",
+      txtChkTitle: "என் பதிவைச் சரிபார்க்க",
+      txtChkSub: "தற்போதைய நிலை மற்றும் நேரத்தைச் சரிபார்க்க உங்கள் டோக்கன் எண் அல்லது NIC ஐ உள்ளிடவும்.",
+      phChkSearch: "டோக்கன் எண் அல்லது NIC உள்ளிடவும்",
+      btnSearchApp: "தேடு",
+      txtStaffTitle: "OPD கவுண்டர் (ஊழியர் பலகை)",
+      txtStaffSub: "நிலுவையில் உள்ள டோக்கன்களை ஏற்று வாட்ஸ்அப் மூலம் அறிவிக்கவும்.",
+      btnStaffLogout: "↩ மருத்துவமனையை மாற்ற / வெளியேற",
+      btnStaffCsv: "⬇️ இன்றைய பட்டியலைப் பதிவிறக்கவும் (CSV)",
+      btnStaffClear: "🗑️ இம்மருத்துவமனைத் தரவை அழிக்கவும்",
+      btnAddEmergency: "+ அவசர நோயாளியைச் சேர்க்கவும்",
+      thStToken: "டோக்கன்",
+      thStName: "நோயாளி பெயர்",
+      thStPhone: "தொலைபேசி எண்",
+      thStWa: "வாட்ஸ்அப் எண்",
+      thStDoc: "மருத்துவர் / துறை",
+      thStDocStatus: "மருத்துவர் வருகை",
+      thStStatus: "நிலை",
+      thStEsttime: "எதிர்பார்க்கப்படும் நேரம்",
+      thStAction: "செயல்பாடு",
+      txtDocTitle: "மருத்துவர் பலகை",
+      txtDocSub: "அங்கீகரிக்கப்பட்ட நோயாளி கலந்தாய்வு வரிசை.",
+      btnDocLogout: "↩ மாற்ற / வெளியேற",
+      lblCurrConsulting: "தற்போது பரிசோதிக்கப்படுபவர்",
+      lblWaitingQueue: "உங்கள் வரிசையில் காத்திருப்போர்",
+      lblSeenToday: "இன்று பார்க்கப்பட்ட நோயாளிகள்",
+      btnCallNext: "அடுத்த நோயாளியை அழைக்கவும்",
+      txtAcceptedQueueTitle: "ஏற்றுக்கொள்ளப்பட்ட நோயாளிகள் வரிசை",
+      thDocToken: "டோக்கன்",
+      thDocName: "நோயாளி பெயர்",
+      thDocAge: "வயது",
+      thDocSpec: "மருத்துவர் / துறை",
+      thDocEsttime: "எதிர்பார்க்கப்படும் நேரம்",
+      thDocPos: "வரிசை நிலை",
+      txtDocHistoryTitle: "இன்று பரிசோதிக்கப்பட்ட நோயாளிகள் வரலாறு",
+      txtDocHistorySub: "இன்று நீங்கள் பரிசோதித்து முடித்த நோயாளிகள்.",
+      thHisToken: "டோக்கன்",
+      thHisName: "நோயாளி பெயர்",
+      thHisAge: "வயது",
+      thHisReason: "காரணம்",
+      thHisTime: "பரிசோதிக்கப்பட்ட நேரம்",
+      modalPassSub: "தொடர ஏதேனும் கடவுச்சொல்லை உள்ளிடவும்.",
+      lblModalHosp: "உங்கள் மருத்துவமனை:",
+      lblModalSpec: "உங்கள் துறை / கிளினிக்:",
+      optSelectHosp: "-- மருத்துவமனையைத் தேர்ந்தெடுக்கவும் --",
+      optSelectSpec: "-- துறையைத் தேர்ந்தெடுக்கவும் --",
+      optFirstSelectHosp: "-- முதலில் மருத்துவமனையைத் தேர்ந்தெடுக்கவும் --",
+      phPasscode: "கடவுச்சொல்லை உள்ளிடவும்",
+      btnModalCancel: "ரத்து செய்",
+      btnModalLogin: "உள்நுழை",
+      docPanelConsultant: "OPD நிபுணர் குழு",
+      docArrived: "மருத்துவர் வந்துவிட்டார்",
+      docNotArrived: "இன்னும் வரவில்லை",
+      btnDocMarkArrived: "✅ வருகையைக் குறிக்கவும்",
+      btnDocMarkLeft: "🔴 வரவில்லை என குறிக்கவும்",
+      docNowServing: "தற்போது கவனிப்பது: டோக்கன் #",
+      btnBookApp: "முன்பதிவு செய்",
+      forPrefix: "இதற்காக: ",
+      generalOpdApp: "பொது OPD முன்பதிவு",
+      pendingStaffAcceptance: "ஊழியர் ஒப்புதலுக்காகக் காத்திருக்கிறது",
+      patientsAhead: "நோயாளிகள் முன்னால் உள்ளனர்",
+      inclEmergency: "உட்பட",
+      emergencyCase: "அவசர வழக்கு",
+      emergencyCases: "அவசர வழக்குகள்",
+      longerWait: "அதிக காத்திருப்பு",
+      posInQueue: "இம்மருத்துவமனை வரிசையில்",
+      posAtHosp: "இம்மருத்துவமனையில்",
+      statusCompleted: "முடிந்தது ✅",
+      statusCancelled: "ரத்து செய்யப்பட்டது ✕",
+      statusAccepted: "ஏற்றுக்கொள்ளப்பட்டது ✓",
+      statusRemaining: "காத்திருக்கிறது (ஒப்புதலுக்காக)",
+      btnAcceptWa: "ஏற்று வாட்ஸ்அப் அனுப்பு",
+      noActivePatient: "செயலில் உள்ள நோயாளி இல்லை",
+      noActiveTokensHosp: "இம்மருத்துவமனைக்குச் செயலில் உள்ள டோக்கன்கள் இல்லை.",
+      noAcceptedPatientsWaiting: "ஏற்றுக்கொள்ளப்பட்ட நோயாளிகள் காத்திருக்கவில்லை.",
+      noPatientsConsultedYet: "இன்று நோயாளிகள் எவரும் பரிசோதிக்கப்படவில்லை.",
+      alertFillAll: "தேவையான அனைத்து புலங்களையும் நிரப்பவும்!",
+      alertSelectHosp: "தயவுசெய்து ஒரு மருத்துவமனையைத் தேர்ந்தெடுக்கவும்!",
+      alertSelectHospToCont: "தொடர உங்கள் மருத்துவமனையைத் தேர்ந்தெடுக்கவும்.",
+      alertSelectSpecToCont: "தொடர உங்கள் துறையைத் தேர்ந்தெடுக்கவும்.",
+      alertEnterPass: "தொடர ஏதேனும் கடவுச்சொல்லை உள்ளிடவும்.",
+      alertLoginHosp: "முதலில் மருத்துவமனையைத் தேர்ந்தெடுத்து உள்நுழையவும்.",
+      alertNoAppExport: "ஏற்றுமதி செய்ய எந்த முன்பதிவும் இல்லை.",
+      alertHospDataCleared: "இம்மருத்துவமனைத் தரவு அழிக்கப்பட்டது.",
+      alertAllDataCleared: "அனைத்து தரவுகளும் வெற்றிகரமாக அழிக்கப்பட்டன!",
+      alertEmergencyAdded: "அவசர நோயாளி வரிசையின் முன்னால் சேர்க்கப்பட்டார்!",
+      alertNoAcceptedQueue: "உங்கள் வரிசையில் நோயாளிகள் எவரும் இல்லை!",
+      confirmCancelApp: "{id} முன்பதிவை ரத்து செய்ய விரும்புகிறீர்களா?",
+      alertAppCancelled: "உங்கள் முன்பதிவு ரத்து செய்யப்பட்டது.",
+      confirmClearHospData: "{hosp} இன் அனைத்து தரவையும் அழிக்க விரும்புகிறீர்களா?",
+      confirmClearAllData: "அமைப்பிலிருந்து அனைத்து தரவையும் அழிக்க நிச்சயமாக விரும்புகிறீர்களா?"
+    }
+  };
+
+  function changeLanguage(lang) {
+    currentLang = lang || 'en';
+    const t = translations[currentLang] || translations.en;
+
+    // Header & Nav
+    document.getElementById('txt-brand-tag').innerText = t.brandTag;
+    document.getElementById('nav-home-btn').innerText = t.navHome;
+    document.getElementById('nav-hospitals-btn').innerText = t.navHospitals;
+    document.getElementById('nav-status-btn').innerText = t.navStatus;
+    document.getElementById('txt-emergency').innerHTML = t.emergency;
+
+    // Home / Hero
+    document.getElementById('txt-title').innerText = t.title;
+    document.getElementById('txt-sub').innerText = t.sub;
+    document.getElementById('txt-u-head').innerText = t.uHead;
+    document.getElementById('txt-u-desc').innerText = t.uDesc;
+    document.getElementById('txt-u-btn').innerText = t.uBtn;
+    document.getElementById('txt-d-head').innerText = t.dHead;
+    document.getElementById('txt-d-desc').innerText = t.dDesc;
+    document.getElementById('txt-d-btn').innerText = t.dBtn;
+    document.getElementById('txt-s-head').innerText = t.sHead;
+    document.getElementById('txt-s-desc').innerText = t.sDesc;
+    document.getElementById('txt-s-btn').innerText = t.sBtn;
+
+    // Features
+    document.getElementById('txt-f1-title').innerText = t.f1Title;
+    document.getElementById('txt-f1-desc').innerText = t.f1Desc;
+    document.getElementById('txt-f2-title').innerText = t.f2Title;
+    document.getElementById('txt-f2-desc').innerText = t.f2Desc;
+    document.getElementById('txt-f3-title').innerText = t.f3Title;
+    document.getElementById('txt-f3-desc').innerText = t.f3Desc;
+
+    // User Portal - Select Hospital
+    document.getElementById('txt-hosp-title').innerText = t.hospTitle;
+    document.getElementById('txt-hosp-sub').innerText = t.hospSub;
+    document.getElementById('lbl-select-prov').innerText = t.lblProv;
+    document.getElementById('lbl-select-dist').innerText = t.lblDist;
+    document.getElementById('lbl-select-hosp').innerText = t.lblHosp;
+    document.getElementById('btn-proceed-token').innerText = t.btnProceedToken;
+
+    const provSelect = document.getElementById('select-province');
+    if (provSelect && provSelect.options[0]) provSelect.options[0].text = t.optChooseProv;
+
+    const distSelect = document.getElementById('select-district');
+    if (distSelect && distSelect.options[0]) {
+      distSelect.options[0].text = distSelect.disabled ? t.optFirstProv : t.optChooseDist;
+    }
+
+    const hospSelect = document.getElementById('select-hospital');
+    if (hospSelect && hospSelect.options[0]) {
+      hospSelect.options[0].text = hospSelect.disabled ? t.optFirstDist : t.optChooseHosp;
+    }
+
+    // Hospital Detail & Doctors List
+    document.getElementById('lnk-back-hospitals').innerText = t.lnkBackHosp;
+    document.getElementById('btn-gen-opd').innerText = t.btnGenOpd;
+    document.getElementById('txt-docs-title').innerText = t.txtDocsTitle;
+    document.getElementById('txt-docs-sub').innerText = t.txtDocsSub;
+
+    // Booking Form
+    document.getElementById('lnk-back-doc').innerText = t.lnkBackDoc;
+    document.getElementById('txt-fill-details').innerText = t.txtFillDetails;
+    document.getElementById('lbl-patient-name').innerText = t.lblPatName;
+    document.getElementById('lbl-patient-nic').innerText = t.lblPatNic;
+    document.getElementById('lbl-patient-age').innerText = t.lblPatAge;
+    document.getElementById('lbl-patient-phone').innerText = t.lblPatPhone;
+    document.getElementById('lbl-patient-wa').innerText = t.lblPatWa;
+    document.getElementById('lbl-patient-reason').innerText = t.lblPatReason;
+
+    document.getElementById('patient-name').placeholder = t.phName;
+    document.getElementById('patient-nic').placeholder = t.phNic;
+    document.getElementById('patient-age').placeholder = t.phAge;
+    document.getElementById('patient-phone').placeholder = t.phPhone;
+    document.getElementById('patient-wa-phone').placeholder = t.phWa;
+    document.getElementById('patient-reason').placeholder = t.phReason;
+    document.getElementById('btn-submit-req').innerText = t.btnSubmitReq;
+
+    // Result Card
+    document.getElementById('lbl-res-hosp').innerText = t.lblResHosp;
+    document.getElementById('lbl-res-doc').innerText = t.lblResDoc;
+    document.getElementById('lbl-res-name').innerText = t.lblResName;
+    document.getElementById('lbl-res-age').innerText = t.lblResAge;
+    document.getElementById('lbl-res-phone').innerText = t.lblResPhone;
+    document.getElementById('lbl-res-wa').innerText = t.lblResWa;
+    document.getElementById('lbl-res-status').innerText = t.lblResStatus;
+    document.getElementById('lbl-res-qpos').innerText = t.lblResQpos;
+    document.getElementById('lbl-res-esttime').innerText = t.lblResEsttime;
+    document.getElementById('btn-chk-app-status').innerText = t.btnChkAppStatus;
+    document.getElementById('res-cancel-btn').innerText = t.btnCancelApp;
+
+    // Search Page
+    document.getElementById('txt-chk-title').innerText = t.txtChkTitle;
+    document.getElementById('txt-chk-sub').innerText = t.txtChkSub;
+    document.getElementById('chk-search-input').placeholder = t.phChkSearch;
+    document.getElementById('btn-search-app').innerText = t.btnSearchApp;
+
+    // Staff Panel
+    document.getElementById('txt-staff-title').innerText = t.txtStaffTitle;
+    document.getElementById('txt-staff-sub').innerText = t.txtStaffSub;
+    document.getElementById('btn-staff-logout').innerText = t.btnStaffLogout;
+    document.getElementById('btn-staff-csv').innerText = t.btnStaffCsv;
+    document.getElementById('btn-staff-clear').innerText = t.btnStaffClear;
+    document.getElementById('btn-add-emergency').innerText = t.btnAddEmergency;
+
+    document.getElementById('th-st-token').innerText = t.thStToken;
+    document.getElementById('th-st-name').innerText = t.thStName;
+    document.getElementById('th-st-phone').innerText = t.thStPhone;
+    document.getElementById('th-st-wa').innerText = t.thStWa;
+    document.getElementById('th-st-doc').innerText = t.thStDoc;
+    document.getElementById('th-st-docstatus').innerText = t.thStDocStatus;
+    document.getElementById('th-st-status').innerText = t.thStStatus;
+    document.getElementById('th-st-esttime').innerText = t.thStEsttime;
+    document.getElementById('th-st-action').innerText = t.thStAction;
+
+    // Doctor Panel
+    document.getElementById('txt-doc-title').innerText = t.txtDocTitle;
+    document.getElementById('txt-doc-sub').innerText = t.txtDocSub;
+    document.getElementById('btn-doc-logout').innerText = t.btnDocLogout;
+    document.getElementById('lbl-curr-consulting').innerText = t.lblCurrConsulting;
+    document.getElementById('lbl-waiting-queue').innerText = t.lblWaitingQueue;
+    document.getElementById('lbl-seen-today').innerText = t.lblSeenToday;
+    document.getElementById('btn-call-next').innerText = t.btnCallNext;
+    document.getElementById('txt-accepted-queue-title').innerText = t.txtAcceptedQueueTitle;
+
+    document.getElementById('th-doc-token').innerText = t.thDocToken;
+    document.getElementById('th-doc-name').innerText = t.thDocName;
+    document.getElementById('th-doc-age').innerText = t.thDocAge;
+    document.getElementById('th-doc-spec').innerText = t.thDocSpec;
+    document.getElementById('th-doc-esttime').innerText = t.thDocEsttime;
+    document.getElementById('th-doc-pos').innerText = t.thDocPos;
+
+    document.getElementById('txt-doc-history-title').innerText = t.txtDocHistoryTitle;
+    document.getElementById('txt-doc-history-sub').innerText = t.txtDocHistorySub;
+
+    document.getElementById('th-his-token').innerText = t.thHisToken;
+    document.getElementById('th-his-name').innerText = t.thHisName;
+    document.getElementById('th-his-age').innerText = t.thHisAge;
+    document.getElementById('th-his-reason').innerText = t.thHisReason;
+    document.getElementById('th-his-time').innerText = t.thHisTime;
+
+    // Modal
+    document.getElementById('txt-modal-pass-sub').innerText = t.modalPassSub;
+    document.getElementById('lbl-modal-hosp').innerText = t.lblModalHosp;
+    document.getElementById('lbl-modal-spec').innerText = t.lblModalSpec;
+    document.getElementById('modal-passcode-input').placeholder = t.phPasscode;
+    document.getElementById('btn-modal-cancel').innerText = t.btnModalCancel;
+    document.getElementById('btn-modal-login').innerText = t.btnModalLogin;
+
+    const modalHospSelect = document.getElementById('modal-hospital-select');
+    if (modalHospSelect && modalHospSelect.options[0]) modalHospSelect.options[0].text = t.optSelectHosp;
+
+    const modalSpecSelect = document.getElementById('modal-specialty-select');
+    if (modalSpecSelect && modalSpecSelect.options[0]) {
+      modalSpecSelect.options[0].text = modalSpecSelect.options.length <= 1 ? t.optFirstSelectHosp : t.optSelectSpec;
+    }
+
+    // Dynamic UI Re-renders
+    const hosp = document.getElementById('select-hospital').value;
+    if (hosp) renderHospitalDetail(hosp);
+
+    if (selectedDoctorSpecialty !== undefined) {
+      document.getElementById('selected-doctor-name').innerText = t.forPrefix + (selectedDoctorSpecialty || t.generalOpdApp);
+    }
+
+    updateUserLiveCard();
+    renderTables();
+    if (lastSearchedQuery) renderSearchResult(lastSearchedQuery);
+  }
+
+  function onProvinceChange(prov) {
+    const distSelect = document.getElementById('select-district');
+    const hospSelect = document.getElementById('select-hospital');
+    const t = translations[currentLang] || translations.en;
+
+    distSelect.innerHTML = `<option value="">${t.optChooseDist}</option>`;
+    hospSelect.innerHTML = `<option value="">${t.optFirstDist}</option>`;
+    hospSelect.disabled = true;
+
+    if (prov && hospitalData[prov]) {
+      distSelect.disabled = false;
+      Object.keys(hospitalData[prov]).forEach(d => distSelect.innerHTML += `<option value="${d}">${d}</option>`);
+    } else { distSelect.disabled = true; }
+  }
+
+  function onDistrictChange(dist) {
+    const prov = document.getElementById('select-province').value;
+    const hospSelect = document.getElementById('select-hospital');
+    const t = translations[currentLang] || translations.en;
+
+    hospSelect.innerHTML = `<option value="">${t.optChooseHosp}</option>`;
+
+    if (prov && dist && hospitalData[prov][dist]) {
+      hospSelect.disabled = false;
+      hospitalData[prov][dist].forEach(h => hospSelect.innerHTML += `<option value="${h}">${h}</option>`);
+    } else { hospSelect.disabled = true; }
+  }
+
+  function showBookingStep(step) {
+    document.getElementById('hospital-select-card').classList.add('hidden');
+    document.getElementById('hospital-detail-card').classList.add('hidden');
+    document.getElementById('booking-process-card').classList.add('hidden');
+    document.getElementById('booking-result-card').classList.add('hidden');
+
+    if (step === 'select') document.getElementById('hospital-select-card').classList.remove('hidden');
+    if (step === 'detail') document.getElementById('hospital-detail-card').classList.remove('hidden');
+    if (step === 'form') document.getElementById('booking-process-card').classList.remove('hidden');
+    if (step === 'result') document.getElementById('booking-result-card').classList.remove('hidden');
+  }
+
+  function backToHospitalSelect() { showBookingStep('select'); }
+  function backToHospitalDetail() { showBookingStep('detail'); }
+
+  function loadHospitalBooking() {
+    const hosp = document.getElementById('select-hospital').value;
+    if(!hosp) return alert(translations[currentLang].alertSelectHosp);
+    renderHospitalDetail(hosp);
+    showBookingStep('detail');
+  }
+
+  function renderHospitalDetail(hosp) {
+    const provSelect = document.getElementById('select-province');
+    const distSelect = document.getElementById('select-district');
+    const province = provSelect.options[provSelect.selectedIndex] ? provSelect.options[provSelect.selectedIndex].text : '';
+    const district = distSelect.value;
+    const t = translations[currentLang] || translations.en;
+
+    document.getElementById('hd-hosp-name').innerText = hosp;
+
+    const doctors = getHospitalDoctors(hosp);
+    const tagsEl = document.getElementById('hd-tags');
+    tagsEl.innerHTML = `
+      ${district ? `<span class="hd-tag">${district}</span>` : ''}
+      ${province ? `<span class="hd-tag">${province}</span>` : ''}
+      <span class="hd-tag hd-tag-count">${doctors.length} OPD specialties available</span>
+    `;
+
+    const grid = document.getElementById('doctor-cards-grid');
+    grid.innerHTML = '';
+    doctors.forEach(doc => {
+      const nowServing = getNowServing(hosp, doc.name);
+      const card = document.createElement('div');
+      card.className = 'doctor-card';
+      card.innerHTML = `
+        <h4>${doc.name}</h4>
+        <p class="doc-label">${t.docPanelConsultant}</p>
+        <p class="doc-schedule">${doc.days} — ${doc.time}</p>
+        <span class="doc-status-pill ${doc.arrived ? 'arrived' : 'not-arrived'}">${doc.arrived ? t.docArrived : t.docNotArrived}</span>
+        <p class="doc-now-serving">${t.docNowServing}${nowServing}</p>
+        <button class="btn btn-primary">${t.btnBookApp}</button>
+      `;
+      card.querySelector('button').onclick = () => bookWithDoctor(doc.name);
+      grid.appendChild(card);
+    });
+  }
+
+  function bookWithDoctor(specialtyName) {
+    const hosp = document.getElementById('select-hospital').value;
+    const t = translations[currentLang] || translations.en;
+    selectedDoctorSpecialty = specialtyName;
+    document.getElementById('selected-hosp-name').innerText = hosp;
+    document.getElementById('selected-doctor-name').innerText = t.forPrefix + (specialtyName || t.generalOpdApp);
+    showBookingStep('form');
+  }
+
+  function calculateEstimatedTime(tokenID) {
+    const t = translations[currentLang] || translations.en;
+    const token = appointments.find(a => a.id === tokenID);
+    if (!token) return "--";
+    if (token.status === 'completed') return t.resHeaderTitleCompleted;
+    if (token.status === 'cancelled') return t.resHeaderTitleCancelled;
+
+    const queue = appointments.filter(a => a.hosp === token.hosp && (a.status === 'pending' || a.status === 'accepted'));
+    const idx = queue.findIndex(a => a.id === tokenID);
+    if (idx === -1) return "--";
+
+    let minutesToAdd = 0;
+    let emergencyAhead = 0;
+    for (let i = 0; i < idx; i++) {
+      if (queue[i].isEmergency) {
+        minutesToAdd += 12;
+        emergencyAhead++;
+      } else {
+        minutesToAdd += 4;
+      }
+    }
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + minutesToAdd);
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const emgText = emergencyAhead > 1 ? t.emergencyCases : t.emergencyCase;
+    const aheadLabel = emergencyAhead > 0
+      ? `${idx} ${t.patientsAhead}, ${t.inclEmergency} ${emergencyAhead} ${emgText} — ${t.longerWait}`
+      : `${idx} ${t.patientsAhead}`;
+
+    return `${timeStr} (${aheadLabel})`;
+  }
+
+  function submitAppointment(e) {
+    e.preventDefault();
+    const hosp = document.getElementById('select-hospital').value;
+    const name = document.getElementById('patient-name').value.trim();
+    const nic = document.getElementById('patient-nic').value.trim();
+    const age = document.getElementById('patient-age').value.trim();
+    const phone = document.getElementById('patient-phone').value.trim();
+    const waPhone = document.getElementById('patient-wa-phone').value.trim();
+    const reason = document.getElementById('patient-reason').value.trim();
+    const t = translations[currentLang] || translations.en;
+
+    if(!name || !nic || !age || !phone || !waPhone) return alert(t.alertFillAll);
+
+    const newID = "OPD-" + Math.floor(1000 + Math.random() * 9000);
+    const newApp = {
+      id: newID, name: name, nic: nic, age: age, phone: phone, waPhone: waPhone, hosp: hosp,
+      doctorSpecialty: selectedDoctorSpecialty || "General OPD",
+      reason: reason || "",
+      status: 'pending', isEmergency: false
+    };
+    
+    appointments.push(newApp);
+    activeUserTokenID = newID;
+    saveData();
+
+    document.getElementById('res-token-num').innerText = "TOKEN #" + newID;
+    document.getElementById('res-hosp').innerText = hosp;
+    document.getElementById('res-doctor').innerText = newApp.doctorSpecialty;
+    document.getElementById('res-name').innerText = name;
+    document.getElementById('res-age').innerText = age;
+    document.getElementById('res-phone').innerText = phone;
+    document.getElementById('res-wa-phone').innerText = waPhone;
+
+    const qPos = getQueuePosition(newApp);
+    document.getElementById('res-queue-pos-val').innerText = `#${qPos.position} of ${qPos.total} ${t.posInQueue}`;
+
+    document.getElementById('res-est-time-container').classList.remove('hidden');
+    document.getElementById('res-est-time').innerText = calculateEstimatedTime(newID);
+
+    showBookingStep('result');
+    
+    updateUserLiveCard();
+    renderTables();
+  }
+
+  function updateUserLiveCard() {
+    if (!activeUserTokenID) return;
+    const app = appointments.find(a => a.id === activeUserTokenID);
+    if (!app) return;
+    const t = translations[currentLang] || translations.en;
+
+    const titleEl = document.getElementById('res-header-title');
+    const subEl = document.getElementById('res-header-sub');
+    const tagEl = document.getElementById('res-status-tag');
+    const timeContainer = document.getElementById('res-est-time-container');
+    const timeEl = document.getElementById('res-est-time');
+    const docEl = document.getElementById('res-doctor');
+    const qPosEl = document.getElementById('res-queue-pos-val');
+
+    if (docEl) docEl.innerText = app.doctorSpecialty || "General OPD";
+    if (qPosEl) {
+      if (app.status === 'completed' || app.status === 'cancelled') {
+        qPosEl.innerText = `--`;
+      } else {
+        const qPos = getQueuePosition(app);
+        qPosEl.innerText = `#${qPos.position} of ${qPos.total} ${t.posInQueue}`;
+      }
+    }
+
+    if (app.status === 'completed') {
+      titleEl.innerText = t.resHeaderTitleCompleted;
+      titleEl.style.color = "var(--primary-dark)";
+      subEl.innerHTML = t.resHeaderSubCompleted;
+      tagEl.className = "status-tag status-completed";
+      tagEl.innerText = t.statusCompleted;
+    } else if (app.status === 'cancelled') {
+      titleEl.innerText = t.resHeaderTitleCancelled;
+      titleEl.style.color = "var(--danger)";
+      subEl.innerHTML = t.resHeaderSubCancelled;
+      tagEl.className = "status-tag status-cancelled";
+      tagEl.innerText = t.statusCancelled;
+    } else if (app.status === 'accepted') {
+      titleEl.innerText = t.resHeaderTitleAccepted;
+      titleEl.style.color = "var(--success)";
+      subEl.innerHTML = t.resHeaderSubAccepted;
+      tagEl.className = "status-tag status-accepted";
+      tagEl.innerText = t.statusAccepted;
+    } else {
+      titleEl.innerText = t.resHeaderTitlePending;
+      titleEl.style.color = "var(--warning)";
+      subEl.innerHTML = t.resHeaderSubPending;
+      tagEl.className = "status-tag status-pending";
+      tagEl.innerText = t.statusRemaining;
+    }
+
+    timeContainer.classList.remove('hidden');
+    timeEl.innerText = calculateEstimatedTime(app.id);
+
+    const cancelBtn = document.getElementById('res-cancel-btn');
+    if (cancelBtn) {
+      if (app.status === 'pending' || app.status === 'accepted') {
+        cancelBtn.classList.remove('hidden');
+      } else {
+        cancelBtn.classList.add('hidden');
+      }
+    }
+  }
+
+  function triggerWhatsAppNotification(waPhone, tokenID, timeEstimate, hospitalName, queuePosText) {
+    let formattedPhone = waPhone.replace(/\D/g, ''); 
+    if (formattedPhone.startsWith('0')) {
+      formattedPhone = '94' + formattedPhone.substring(1);
+    } else if (!formattedPhone.startsWith('94')) {
+      formattedPhone = '94' + formattedPhone;
+    }
+
+    const message = `🏥 *Smart OPD Appointment Confirmation*\n\n` +
+                    `Dear Patient,\nYour OPD appointment has been *ACCEPTED*.\n\n` +
+                    `📌 *Token Number:* ${tokenID}\n` +
+                    `🏥 *Hospital:* ${hospitalName}\n` +
+                    `📍 *Queue Position:* ${queuePosText}\n` +
+                    `⏰ *Estimated Time:* ${timeEstimate}\n\n` +
+                    `Please arrive at the hospital counter on time. Thank you!`;
+
+    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+  }
+
+  function acceptAppointment(id, chosenSpecialty) {
+    const app = appointments.find(a => a.id === id);
+    const t = translations[currentLang] || translations.en;
+    if (app) {
+      if (chosenSpecialty) app.doctorSpecialty = chosenSpecialty;
+      app.status = 'accepted';
+      saveData();
+      renderTables();
+      updateUserLiveCard();
+
+      const timeEst = calculateEstimatedTime(app.id);
+      const qPos = getQueuePosition(app);
+      const qPosText = `#${qPos.position} of ${qPos.total} ${t.posAtHosp}`;
+      triggerWhatsAppNotification(app.waPhone, app.id, timeEst, app.hosp, qPosText);
+    }
+  }
+
+  function addEmergencyPatient() {
+    const t = translations[currentLang] || translations.en;
+    if (!currentStaffHospital) return alert(t.alertLoginHosp);
+    const eID = "EMG-" + Math.floor(100 + Math.random() * 900);
+    const emergencyApp = {
+      id: eID,
+      name: "CRITICAL EMERGENCY",
+      nic: "EMERGENCY",
+      age: "",
+      phone: "0700000000",
+      waPhone: "0700000000",
+      hosp: currentStaffHospital,
+      doctorSpecialty: "General OPD",
+      status: "accepted",
+      isEmergency: true
+    };
+    
+    const firstAcceptedIdx = appointments.findIndex(a => a.status === 'accepted' && a.hosp === currentStaffHospital);
+    if(firstAcceptedIdx !== -1) {
+      appointments.splice(firstAcceptedIdx, 0, emergencyApp);
+    } else {
+      appointments.unshift(emergencyApp);
+    }
+
+    saveData();
+    alert(t.alertEmergencyAdded);
+    renderTables();
+    updateUserLiveCard();
+  }
+
+  let lastSearchedQuery = null;
+
+  function searchAppointment() {
+    const query = document.getElementById('chk-search-input').value.trim().toLowerCase();
+    lastSearchedQuery = query;
+    renderSearchResult(query);
+  }
+
+  function renderSearchResult(query) {
+    const resultBox = document.getElementById('search-result');
+    resultBox.classList.remove('hidden');
+    const t = translations[currentLang] || translations.en;
+
+    const app = appointments.find(a => a.id.toLowerCase() === query || a.nic.toLowerCase() === query);
+
+    if (app) {
+      const timeInfo = calculateEstimatedTime(app.id);
+      const statusMap = {
+        completed: ['status-completed', t.statusCompleted],
+        accepted:  ['status-accepted', t.statusAccepted],
+        cancelled: ['status-cancelled', t.statusCancelled],
+        pending:   ['status-pending', t.statusRemaining]
+      };
+      const [statusClass, statusLabel] = statusMap[app.status] || statusMap.pending;
+
+      const qPosLine = (app.status === 'pending' || app.status === 'accepted')
+        ? (() => { const qPos = getQueuePosition(app); return `<p style="margin-top:8px;"><b>${t.lblResQpos}</b> <span style="color:var(--primary-dark);font-weight:700;">#${qPos.position} of ${qPos.total} ${t.posAtHosp}</span></p>`; })()
+        : '';
+
+      const cancelBtn = (app.status === 'pending' || app.status === 'accepted')
+        ? `<button class="btn btn-danger" style="margin-top:14px;" onclick="cancelAppointment('${app.id}')">${t.btnCancelApp}</button>`
+        : '';
+
+      resultBox.innerHTML = `
+        <h3 style="color:var(--primary);">Token Found: ${app.id}</h3>
+        <p><b>${t.lblResName}</b> ${app.name}</p>
+        <p><b>${t.lblResAge}</b> ${app.age || '--'}</p>
+        <p><b>${t.lblPatNic}</b> ${app.nic}</p>
+        <p><b>${t.lblResPhone}</b> ${app.phone}</p>
+        <p><b>${t.lblResWa}</b> ${app.waPhone}</p>
+        <p><b>${t.lblResHosp}</b> ${app.hosp}</p>
+        <p><b>${t.lblResDoc}</b> ${app.doctorSpecialty || 'General OPD'}</p>
+        ${app.reason ? `<p><b>Reason:</b> ${app.reason}</p>` : ''}
+        <p><b>${t.lblResStatus}</b> <span class="status-tag ${statusClass}">${statusLabel}</span></p>
+        ${qPosLine}
+        <p style="margin-top:8px;font-size:16px;"><b>${t.lblResEsttime}</b> <span style="color:var(--primary-dark);font-weight:700;">${timeInfo}</span></p>
+        ${cancelBtn}
+      `;
+    } else {
+      resultBox.innerHTML = `<p style="color:var(--danger);font-weight:700;">No record found for "${query}". Please check your details.</p>`;
+    }
+  }
+
+  function cancelAppointment(id) {
+    const app = appointments.find(a => a.id === id);
+    const t = translations[currentLang] || translations.en;
+    if (!app) return;
+    if (app.status === 'completed' || app.status === 'cancelled') return;
+
+    if (!confirm(t.confirmCancelApp.replace('{id}', id))) return;
+
+    app.status = 'cancelled';
+    app.cancelledAt = new Date().toISOString();
+    saveData();
+    renderTables();
+    updateUserLiveCard();
+    if (lastSearchedQuery) renderSearchResult(lastSearchedQuery);
+    alert(t.alertAppCancelled);
+  }
+
+  function callNextPatient() {
+    const t = translations[currentLang] || translations.en;
+    if (!currentDoctorHospital || !currentDoctorSpecialty) return alert(t.alertSelectSpecToCont);
+
+    const key = doctorQueueKey(currentDoctorHospital, currentDoctorSpecialty);
+    const myQueue = appointments.filter(a => a.status === 'accepted' && a.hosp === currentDoctorHospital && (a.doctorSpecialty || 'General OPD') === currentDoctorSpecialty);
+
+    if (myQueue.length > 0) {
+      const nextPatient = myQueue[0];
+      nextPatient.status = 'completed';
+      nextPatient.completedAt = new Date().toISOString();
+      activeTokens[key] = { id: nextPatient.id, name: nextPatient.name };
+      saveData();
+      renderTables();
+      updateUserLiveCard();
+    } else {
+      alert(t.alertNoAcceptedQueue);
+    }
+  }
+
+  function renderTables() {
+    const t = translations[currentLang] || translations.en;
+    const staffBody = document.getElementById('staff-table-body');
+    if(staffBody) {
+      staffBody.innerHTML = '';
+      const staffAppointments = currentStaffHospital
+        ? appointments.filter(a => a.hosp === currentStaffHospital)
+        : [];
+      if(staffAppointments.length === 0) {
+        staffBody.innerHTML = `<tr><td colspan="9" style="text-align:center;">${t.noActiveTokensHosp}</td></tr>`;
+      } else {
+        staffAppointments.forEach(app => {
+          const timeEst = calculateEstimatedTime(app.id);
+          const ageNote = app.age ? `<span class="reason-note">Age: ${app.age}</span>` : '';
+          const reasonNote = app.reason ? `<span class="reason-note">Reason: ${app.reason}</span>` : '';
+
+          let doctorCell;
+          if (app.status === 'pending') {
+            const doctors = getHospitalDoctors(app.hosp);
+            const options = [`<option value="General OPD" ${(app.doctorSpecialty || 'General OPD') === 'General OPD' ? 'selected' : ''}>General OPD</option>`]
+              .concat(doctors.map(d => `<option value="${d.name}" ${app.doctorSpecialty === d.name ? 'selected' : ''}>${d.name}</option>`))
+              .join('');
+            doctorCell = `<select class="doc-select" id="doc-select-${app.id}">${options}</select>`;
+          } else {
+            doctorCell = `<b>${app.doctorSpecialty || 'General OPD'}</b>`;
+          }
+
+          const docStatusKey = doctorQueueKey(app.hosp, app.doctorSpecialty || 'General OPD');
+          const docHasArrived = !!doctorArrivalStatus[docStatusKey];
+          const docStatusCell = `<span class="status-tag" style="background:${docHasArrived ? '#dcfce7' : '#fee2e2'};color:${docHasArrived ? '#166534' : '#991b1b'};">${docHasArrived ? '🟢 ' + t.docArrived : '🔴 ' + t.docNotArrived}</span>`;
+
+          const staffStatusMap = {
+            completed: ['status-completed', t.statusCompleted],
+            accepted:  ['status-accepted', t.statusAccepted],
+            cancelled: ['status-cancelled', t.statusCancelled],
+            pending:   ['status-pending', t.statusRemaining]
+          };
+          const [staffStatusClass, staffStatusLabel] = staffStatusMap[app.status] || staffStatusMap.pending;
+
+          let actionCell;
+          if (app.status === 'pending') {
+            actionCell = `<button class="btn btn-whatsapp" style="padding:6px 12px;font-size:12px;" onclick="acceptAppointment('${app.id}', document.getElementById('doc-select-${app.id}').value)">${t.btnAcceptWa}</button>`;
+          } else if (app.status === 'completed') {
+            actionCell = `<span style="color:#4338ca;font-weight:bold;">${t.statusCompleted}</span>`;
+          } else if (app.status === 'cancelled') {
+            actionCell = `<span style="color:#b91c1c;font-weight:bold;">${t.statusCancelled}</span>`;
+          } else {
+            actionCell = `<span style="color:green;font-weight:bold;">${t.statusAccepted}</span>`;
+          }
+
+          staffBody.innerHTML += `
+            <tr>
+              <td><b>${app.id}</b> ${app.isEmergency ? '<b style="color:red;">[EMERGENCY]</b>':''}</td>
+              <td>${app.name}${ageNote}${reasonNote}</td>
+              <td>${app.phone}</td>
+              <td><b>${app.waPhone}</b></td>
+              <td>${doctorCell}</td>
+              <td>${docStatusCell}</td>
+              <td><span class="status-tag ${staffStatusClass}">${staffStatusLabel}</span></td>
+              <td>${timeEst}</td>
+              <td>${actionCell}</td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    const docBody = document.getElementById('doctor-table-body');
+    if(docBody) {
+      docBody.innerHTML = '';
+      const doctorAcceptedList = (currentDoctorHospital && currentDoctorSpecialty)
+        ? appointments.filter(a => a.status === 'accepted' && a.hosp === currentDoctorHospital && (a.doctorSpecialty || 'General OPD') === currentDoctorSpecialty)
+        : [];
+      if(doctorAcceptedList.length === 0) {
+        docBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${t.noAcceptedPatientsWaiting}</td></tr>`;
+      } else {
+        doctorAcceptedList.forEach((app, idx) => {
+          const timeEst = calculateEstimatedTime(app.id);
+          docBody.innerHTML += `
+            <tr>
+              <td><b>${app.id}</b> ${app.isEmergency ? '<b style="color:red;">[EMERGENCY]</b>':''}</td>
+              <td>${app.name}</td>
+              <td>${app.age || '--'}</td>
+              <td>${app.doctorSpecialty || 'General OPD'}</td>
+              <td>${timeEst}</td>
+              <td><b>Pos #${idx + 1}</b></td>
+            </tr>
+          `;
+        });
+      }
+
+      const seenCountEl = document.getElementById('doc-seen-count');
+      const waitingCountEl = document.getElementById('doc-waiting-count');
+      const activeTokenEl = document.getElementById('doc-active-token');
+      let seenTodayList = [];
+      const arrivalLabelEl = document.getElementById('doc-arrival-label');
+      const arrivalBtnEl = document.getElementById('btn-doc-arrival');
+      const arrivalBoxEl = document.getElementById('doc-arrival-box');
+      if (currentDoctorHospital && currentDoctorSpecialty) {
+        if (waitingCountEl) waitingCountEl.innerText = doctorAcceptedList.length;
+
+        if (arrivalLabelEl && arrivalBtnEl && arrivalBoxEl) {
+          const arrivalKey = doctorQueueKey(currentDoctorHospital, currentDoctorSpecialty);
+          const hasArrived = !!doctorArrivalStatus[arrivalKey];
+          arrivalLabelEl.innerText = hasArrived ? ('🟢 ' + t.docArrived) : ('🔴 ' + t.docNotArrived);
+          arrivalBtnEl.innerText = hasArrived ? t.btnDocMarkLeft : t.btnDocMarkArrived;
+          arrivalBtnEl.className = hasArrived ? 'btn btn-danger' : 'btn btn-success';
+          arrivalBoxEl.style.background = hasArrived ? '#f0fdf4' : '#fef2f2';
+        }
+
+        seenTodayList = appointments.filter(a =>
+          a.status === 'completed' &&
+          a.hosp === currentDoctorHospital &&
+          (a.doctorSpecialty || 'General OPD') === currentDoctorSpecialty &&
+          isToday(a.completedAt)
+        ).sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
+        if (seenCountEl) seenCountEl.innerText = seenTodayList.length;
+
+        if (activeTokenEl) {
+          const key = doctorQueueKey(currentDoctorHospital, currentDoctorSpecialty);
+          const myActive = activeTokens[key];
+          activeTokenEl.innerText = myActive ? `${myActive.id} - ${myActive.name}` : t.noActivePatient;
+        }
+      }
+
+      const historyBody = document.getElementById('doctor-history-table-body');
+      if (historyBody) {
+        if (seenTodayList.length === 0) {
+          historyBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">${t.noPatientsConsultedYet}</td></tr>`;
+        } else {
+          historyBody.innerHTML = seenTodayList.map(app => `
+            <tr>
+              <td><b>${app.id}</b></td>
+              <td>${app.name}</td>
+              <td>${app.age || '--'}</td>
+              <td>${app.reason || '--'}</td>
+              <td>${formatTime(app.completedAt)}</td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+  }
+
+  function promptLogin(role) {
+    const t = translations[currentLang] || translations.en;
+    currentRole = role;
+    document.getElementById('modal-title').innerText = role === 'doctor' ? t.dHead : t.sHead;
+    document.getElementById('modal-passcode-input').value = '';
+
+    const hospGroup = document.getElementById('modal-hospital-group');
+    const hospSelect = document.getElementById('modal-hospital-select');
+    const specGroup = document.getElementById('modal-specialty-group');
+
+    if (role === 'staff') {
+      hospSelect.innerHTML = `<option value="">${t.optSelectHosp}</option>` +
+        getAllHospitalsFlat().map(h => `<option value="${h}" ${h === currentStaffHospital ? 'selected' : ''}>${h}</option>`).join('');
+      hospGroup.classList.remove('hidden');
+      specGroup.classList.add('hidden');
+    } else if (role === 'doctor') {
+      hospSelect.innerHTML = `<option value="">${t.optSelectHosp}</option>` +
+        getAllHospitalsFlat().map(h => `<option value="${h}" ${h === currentDoctorHospital ? 'selected' : ''}>${h}</option>`).join('');
+      hospGroup.classList.remove('hidden');
+      specGroup.classList.remove('hidden');
+      onModalHospitalChange();
+    } else {
+      hospGroup.classList.add('hidden');
+      specGroup.classList.add('hidden');
+    }
+
+    document.getElementById('login-modal').classList.remove('hidden');
+  }
+
+  function onModalHospitalChange() {
+    if (currentRole !== 'doctor') return;
+    const hosp = document.getElementById('modal-hospital-select').value;
+    const specSelect = document.getElementById('modal-specialty-select');
+    const t = translations[currentLang] || translations.en;
+    const options = getHospitalSpecialtyOptions(hosp);
+    if (options.length === 0) {
+      specSelect.innerHTML = `<option value="">${t.optFirstSelectHosp}</option>`;
+      return;
+    }
+    specSelect.innerHTML = `<option value="">${t.optSelectSpec}</option>` +
+      options.map(s => `<option value="${s}" ${s === currentDoctorSpecialty ? 'selected' : ''}>${s}</option>`).join('');
+  }
+
+  function closeModal() { document.getElementById('login-modal').classList.add('hidden'); }
+
+  function verifyLogin() {
+    const input = document.getElementById('modal-passcode-input').value.trim();
+    const t = translations[currentLang] || translations.en;
+    if(input === "") return alert(t.alertEnterPass);
+
+    if (currentRole === 'staff') {
+      const chosenHosp = document.getElementById('modal-hospital-select').value;
+      if (!chosenHosp) return alert(t.alertSelectHospToCont);
+      currentStaffHospital = chosenHosp;
+    } else if (currentRole === 'doctor') {
+      const chosenHosp = document.getElementById('modal-hospital-select').value;
+      const chosenSpec = document.getElementById('modal-specialty-select').value;
+      if (!chosenHosp) return alert(t.alertSelectHospToCont);
+      if (!chosenSpec) return alert(t.alertSelectSpecToCont);
+      currentDoctorHospital = chosenHosp;
+      currentDoctorSpecialty = chosenSpec;
+    }
+
+    closeModal();
+    hideViews();
+    if (currentRole === 'doctor') {
+      document.getElementById('view-doctor-panel').classList.remove('hidden');
+      const dHeadEl = document.getElementById('doctor-panel-hospital-name');
+      const dSpecEl = document.getElementById('doctor-panel-specialty-name');
+      if (dHeadEl) dHeadEl.innerText = currentDoctorHospital;
+      if (dSpecEl) dSpecEl.innerText = currentDoctorSpecialty;
+    } else {
+      document.getElementById('view-staff-panel').classList.remove('hidden');
+      const headEl = document.getElementById('staff-panel-hospital-name');
+      if (headEl) headEl.innerText = currentStaffHospital;
+    }
+    renderTables();
+  }
+
+  function staffLogout() {
+    currentStaffHospital = null;
+    currentDoctorHospital = null;
+    currentDoctorSpecialty = null;
+    currentRole = '';
+    goHome();
+  }
+
+  function hideViews() {
+    document.getElementById('view-landing').classList.add('hidden');
+    document.getElementById('view-user-hospitals').classList.add('hidden');
+    document.getElementById('view-user-status').classList.add('hidden');
+    document.getElementById('view-doctor-panel').classList.add('hidden');
+    document.getElementById('view-staff-panel').classList.add('hidden');
+  }
+
+  function goHome() {
+    hideViews();
+    document.getElementById('view-landing').classList.remove('hidden');
+    document.getElementById('nav-hospitals-btn').classList.add('hidden');
+    document.getElementById('nav-status-btn').classList.add('hidden');
+  }
+
+  function openUserPortal() {
+    hideViews();
+    document.getElementById('view-user-hospitals').classList.remove('hidden');
+    document.getElementById('nav-hospitals-btn').classList.remove('hidden');
+    document.getElementById('nav-status-btn').classList.remove('hidden');
+    showBookingStep('select');
+  }
+
+  function showUserHospitals() { hideViews(); document.getElementById('view-user-hospitals').classList.remove('hidden'); showBookingStep('select'); }
+  function showUserStatus() { hideViews(); document.getElementById('view-user-status').classList.remove('hidden'); }
+
+  // Initial setup: Default English
+  changeLanguage('en');
+
+  setInterval(() => { 
+    renderTables(); 
+    updateUserLiveCard();
+    if (lastSearchedQuery) renderSearchResult(lastSearchedQuery);
+  }, 3000);
+</script>
+</body>
+</html>
